@@ -5,6 +5,7 @@ import pymorphy2  # creating tags based on words porpology
 from PIL import Image  # to show pics of recipes
 
 from data import db_session  # db engine
+from data.products import Product  # orm Recipe class
 from data.recipes import Recipe  # orm Recipe class
 
 
@@ -64,7 +65,7 @@ def main():
     add_new_recipe('', '', '')
     '''
 
-    tags_search(input())
+    recipe_tags_search(input())
 
 
 def get_all_word_forms(word):
@@ -86,7 +87,7 @@ def get_all_word_forms(word):
         for form in lexeme:
             all_forms_set.add(str(form.word))
 
-    print(all_forms_set)
+    # print(all_forms_set)
     return list(all_forms_set)
 
 
@@ -111,7 +112,7 @@ def create_tags_for_line(line):
     return line.lower() + ';' + ';'.join(line.split()).lower() + tags.lower()
 
 
-def add_new_recipe(name, ingredients, how_to_cook):
+def add_new_recipe(name, ingredients, how_to_cook, photo_address=''):
     '''void function, adds new recipe to the db
     needs recipe name, ingredients in format: 'ingr1;ingr2;ingr3'
     tags are being created using create_tags_for_line(name)
@@ -119,7 +120,7 @@ def add_new_recipe(name, ingredients, how_to_cook):
     db_sess = db_session.create_session()
     # if there are a recipe with the name like that
     if db_sess.query(Recipe).filter(Recipe.name == name).first():
-        print('this recipe already exists')
+        print(f'this recipe already exists({name})')
 
     else:
         # creating Recipe class object
@@ -127,12 +128,33 @@ def add_new_recipe(name, ingredients, how_to_cook):
                         ingredients=ingredients,
                         how_to_cook=how_to_cook,
                         tags=create_tags_for_line(name))
-        recipe.set_photo_address()
+        recipe.set_photo_address(photo_address)
         db_sess.add(recipe)
         db_sess.commit()
 
 
-def tags_search(search_input):
+def add_new_product(name, store, price, photo_address=''):
+    '''void function, adds new product to the db
+        needs product name, store and price
+        tags are being created using create_tags_for_line(name)
+        '''
+    db_sess = db_session.create_session()
+    # if there are a product with the name like that
+    if db_sess.query(Product).filter(Product.name == name).first():
+        print(f'this product already exists({name})')
+
+    else:
+        # creating Recipe class object
+        product = Product(name=name,
+                          store=store,
+                          price=price,
+                          tags=create_tags_for_line(name))
+        product.set_photo_address(photo_address)
+        db_sess.add(product)
+        db_sess.commit()
+
+
+def recipe_tags_search(search_input):
     '''input: searching request
     output: prints found recipes and opens photos
     returns a list of found Recipe objects '''
