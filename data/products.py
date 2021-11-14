@@ -29,4 +29,4 @@ class Product(SqlAlchemyBase):
             self.photo_address = f'static/img/file_{str(self.name)}.jpg'
 
     def __repr__(self):
-        return f'Product({str(self.name)})'
+        return f'Product({str(self.name)}, {str(self.store)}, {self.price})'

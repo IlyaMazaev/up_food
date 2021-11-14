@@ -7,7 +7,7 @@ from main_recipes_api import add_new_product  # function from main_recipes_api
 
 
 def add_parsed_data_from_vkusvill():
-    db_session.global_init("../db/products.db")  # connecting to db
+    db_session.global_init("../db/recipes_data.db")  # connecting to db
 
     pages_counter = list()
     options = Options()

@@ -10,7 +10,7 @@ from main_recipes_api import add_new_product  # function from main_recipes_api
 
 
 def add_parsed_data_from_perekrestok():
-    db_session.global_init("../db/products.db")  # connecting to db
+    db_session.global_init("../db/recipes_data.db")  # connecting to db
 
     product_pages = [113, 148]
     pages_counter = list()
