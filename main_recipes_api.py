@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 
-import pymorphy2  # creating tags based on words porpology
+import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
 
 from data import db_session  # db engine
@@ -71,11 +71,18 @@ def main():
     add_new_recipe('', '', '')
     '''
 
-    for found_recipe in recipe_tags_search(input()):
-        print(found_recipe.ingredients)
-        for ingredient in found_recipe.ingredients.split(';'):
+    product_prices_sum = 0  # stores sum of ingredients prices
+    for found_recipe in recipe_tags_search(input()):  # for all matching recipes
+        print(found_recipe.ingredients)  # prints ingredients
+        for ingredient in found_recipe.ingredients.split(';'):  # iterating product ingredients
             print(ingredient.split(' - ')[0])
-            products_for_recipe_search(ingredient.split(' - ')[0])
+            products_found = products_for_recipe_search(ingredient.split(' - ')[0])  # getting list of matching products
+            try:
+                product_prices_sum += int(
+                    products_found[0].price)  # if found adds price of first element to sum variable
+            except IndexError:
+                pass  # of sequence is empty does nothing
+    print(f'Итого: {product_prices_sum}')  # printing sum of found products
 
 
 def get_all_word_forms(word):
