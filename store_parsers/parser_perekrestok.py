@@ -1,4 +1,5 @@
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 
@@ -19,12 +20,15 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
     driver = setDriver()
     driver.get(product_url)
     product_list = list()
-    elements_of_types_of_food = driver.find_element(By.CSS_SELECTOR, '.catalog__list').find_elements(By.CSS_SELECTOR,
-                                                                                                     'div.category-card__title')  # Поиск всех категорий
-    for i in range(4, len(elements_of_types_of_food)):
+    url_list = list()
+    elements_of_types_of_food = driver.find_element(By.CSS_SELECTOR, '.catalog__list').find_elements(By.TAG_NAME,
+                                                                                                     'a')  # Поиск всех категорий
+    for i in range(0, len(elements_of_types_of_food)):
+        url_list.append(elements_of_types_of_food[i].get_attribute('href'))
+    for i in range(4, len(url_list)):
         if i in not_parsing_pages:
             continue
-        elements_of_types_of_food[i].click()
+        driver.get(url_list[i])
         driver.implicitly_wait(5)
         elements_of_types_of_food_next = driver.find_elements(By.CSS_SELECTOR,
                                                               '.products-slider__header')  # Поиск всех под категорий
@@ -38,7 +42,10 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
                                                 '.sc-jrAGrp.kAEaPn')  # Поиск карточки продукта и названия категории
             type_of_product = driver.find_element(By.CSS_SELECTOR, '.page-header__title').text
             for k in product_card:  # Поиск названия, цены, ссылки на изображение в карточке продукта
-                image = k.find_element(By.TAG_NAME, 'img.product-card__image').get_attribute('src')
+                try:
+                    image = k.find_element(By.TAG_NAME, 'img.product-card__image').get_attribute('src')
+                except NoSuchElementException:
+                    image = None
                 name = k.find_element(By.CSS_SELECTOR, '.product-card__title').text
                 price = k.find_element(By.CSS_SELECTOR, '.price-new').text
                 product_list.append(Product(name, price, image, type_of_product))
