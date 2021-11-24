@@ -29,17 +29,21 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
     driver = setDriver()
     driver.get(product_url)
     product_list = list()
+    url_list = list()
     elements_of_types_of_food = driver.find_elements(By.CLASS_NAME, 'VVCategCards2020__Col')  # Поиск всех категорий
-    for i in range(4, len(elements_of_types_of_food)):
+    for i in range(0, len(elements_of_types_of_food)):
+        url_list.append(elements_of_types_of_food[i].find_element(By.TAG_NAME, 'a').get_attribute('href'))
+    for i in range(4, len(url_list)):
         if i in not_parsing_pages:
             continue
-        elements_of_types_of_food[i].click()
+        driver.get(url_list[i])
         element = WebDriverWait(driver, 10).until(
             ec.presence_of_all_elements_located(
                 (By.CSS_SELECTOR, '.ProductCard__imageImg.lazyload')))  # Проверка загрузилась ли страницы
         max_page_number = check_numbers_of_pages(driver.current_url, driver)  # Поиск страниц
-        for j in range(1, int(max_page_number)):
-            driver.get(driver.current_url + '?PAGEN_1=' + str(j))
+        url = driver.current_url + '?PAGEN_1='
+        for j in range(1, int(max_page_number) + 1):
+            driver.get(url + str(j))
             element = WebDriverWait(driver, 10).until(
                 ec.presence_of_all_elements_located(
                     (By.CSS_SELECTOR, '.ProductCard__imageImg.lazyload')))  # Проверка на загруженность страницы
