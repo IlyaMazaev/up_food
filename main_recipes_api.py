@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 import os
 
-import pymorphy2  # creating tags based on words porpology
+import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
 
 from data import db_session  # db engine
+from data.products import Product  # orm Recipe class
 from data.recipes import Recipe  # orm Recipe class
 
 
 def main():
     db_session.global_init("db/recipes_data.db")  # connecting to db
+    '''
+    db_sess = db_session.create_session()
+    print(db_sess.query(Product).all())
+    '''
+    db_sess = db_session.create_session()
+    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).all())
     '''
     add_new_recipe('Домашние беляши',
                    'Вода - 500 г; Масло растительное - 2 ст. ложки;Мука - 500 г;Соль - 1 ч. л.;Сахар - по вкусу (немного);Дрожжи сухие - 1 ч. л.;Мясо (говядина и свинина) - 400-500 г;Лук репчатый - 200-300 г;Перец черный - по вкусу;Соль - по вкусу',
@@ -58,13 +65,24 @@ def main():
     add_new_recipe('Пастила',
                    'Желатин - 30 г;Вода - 1 ст.;Сахар - 420 г;Патока или сироп - по вкусу;Соль - 0.25 ч.л.;Яичный белок - 2 шт.;Ванильный сахар - 1 уп.;Сахарная пудра со вкусом ванили - 0.5 уп.;Крахмал - 25 г',
                    'Желатин залить ½ ст. горячей воды и мешать до полного растворения.\n На огонь поставить кастрюлю с сахаром, сиропом, солью и половиной стакана воды. Помешивая, варить на среднем огне около 7 минут.\n Как только сахар расплавится, выключить огонь и добавить желатин. Остудить смесь до комнатной температуры.\n Взбить белки в глубокой посуде, влить туда всю жидкость из кастрюли и взбивать миксером на большой скорости. Когда белки с желатиновой смесью поднимутся, добавить туда ванильный сахар и продолжать взбивать до максимально густой массы.\n Затем смешать крахмал и сахарную пудру. Взять застеленный бумагой для выпекания и смазанный маслом противень и присыпать его смесью из крахмала и сахарной пудры.\n Вылить массу на противень и равномерно распределить ее по всей поверхности. Массу присыпать смесью из крахмала и сахарной пудры и, ничем не накрывая и не убирая в холодильник, оставить пастилу настояться минимум на 3-4 часа.\n Из готовой пастилы формами для печенья или острым ножом сделать нужные вам формы.')
-    
+
     add_new_recipe('', '', '')
     add_new_recipe('', '', '')
     add_new_recipe('', '', '')
     '''
 
-    tags_search(input())
+    product_prices_sum = 0  # stores sum of ingredients prices
+    for found_recipe in recipe_tags_search(input()):  # for all matching recipes
+        print(found_recipe.ingredients)  # prints ingredients
+        for ingredient in found_recipe.ingredients.split(';'):  # iterating product ingredients
+            print(ingredient.split(' - ')[0])
+            products_found = products_for_recipe_search(ingredient.split(' - ')[0])  # getting list of matching products
+            try:
+                product_prices_sum += int(
+                    products_found[0].price)  # if found adds price of first element to sum variable
+            except IndexError:
+                pass  # of sequence is empty does nothing
+    print(f'Итого: {product_prices_sum}')  # printing sum of found products
 
 
 def get_all_word_forms(word):
@@ -86,7 +104,7 @@ def get_all_word_forms(word):
         for form in lexeme:
             all_forms_set.add(str(form.word))
 
-    print(all_forms_set)
+    # print(all_forms_set)
     return list(all_forms_set)
 
 
@@ -111,7 +129,7 @@ def create_tags_for_line(line):
     return line.lower() + ';' + ';'.join(line.split()).lower() + tags.lower()
 
 
-def add_new_recipe(name, ingredients, how_to_cook):
+def add_new_recipe(name, ingredients, how_to_cook, photo_address=''):
     '''void function, adds new recipe to the db
     needs recipe name, ingredients in format: 'ingr1;ingr2;ingr3'
     tags are being created using create_tags_for_line(name)
@@ -119,7 +137,7 @@ def add_new_recipe(name, ingredients, how_to_cook):
     db_sess = db_session.create_session()
     # if there are a recipe with the name like that
     if db_sess.query(Recipe).filter(Recipe.name == name).first():
-        print('this recipe already exists')
+        print(f'this recipe already exists({name})')
 
     else:
         # creating Recipe class object
@@ -127,12 +145,33 @@ def add_new_recipe(name, ingredients, how_to_cook):
                         ingredients=ingredients,
                         how_to_cook=how_to_cook,
                         tags=create_tags_for_line(name))
-        recipe.set_photo_address()
+        recipe.set_photo_address(photo_address)
         db_sess.add(recipe)
         db_sess.commit()
 
 
-def tags_search(search_input):
+def add_new_product(name, store, price, photo_address=''):
+    '''void function, adds new product to the db
+        needs product name, store and price
+        tags are being created using create_tags_for_line(name)
+        '''
+    db_sess = db_session.create_session()
+    # if there are a product with the name like that
+    if db_sess.query(Product).filter(Product.name == name).first():
+        print(f'this product already exists({name})')
+
+    else:
+        # creating Recipe class object
+        product = Product(name=name,
+                          store=store,
+                          price=price,
+                          tags=create_tags_for_line(name))
+        product.set_photo_address(photo_address)
+        db_sess.add(product)
+        db_sess.commit()
+
+
+def recipe_tags_search(search_input):
     '''input: searching request
     output: prints found recipes and opens photos
     returns a list of found Recipe objects '''
@@ -146,6 +185,7 @@ def tags_search(search_input):
 
         for found_recipe in search_query:  # found recipes for word
             recipes_found.append(found_recipe)
+            # printing data
             print('-' * 1000)
             print(found_recipe)
             print(found_recipe.how_to_cook)
@@ -155,6 +195,30 @@ def tags_search(search_input):
             print('-' * 1000)
     # returns a list of found Recipe objects
     return recipes_found
+
+
+def products_for_recipe_search(search_input):
+    '''input: searching request
+    output: prints found products
+    returns a list of found Product with matching name'''
+
+    products_found = list()  # list which contains all found recipes
+    search_query = []
+    for word in list(map(lambda x: x.lower(), search_input.split())):  # each word is an separated search key
+        if word not in ['и', 'с', 'из', 'для']:  # filtering prepositions
+            db_sess = db_session.create_session()
+
+            if not search_query:
+                # if search_query was empty creates it with search by first word from request
+                search_query = db_sess.query(Product).filter(Product.name.like('%' + word.lower() + '%')).all()
+            # filters the list and leaves only products which names contain the word
+            search_query = list(filter(lambda x: word in list(map(lambda x: x.lower(), x.name.split())), search_query))
+
+            for found_product in search_query:  # found products for word
+                products_found.append(found_product)
+    # returns a list of found Recipe objects
+    print(products_found)
+    return products_found
 
 
 if __name__ == '__main__':
