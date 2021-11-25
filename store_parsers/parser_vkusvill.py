@@ -3,18 +3,16 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
+from tqdm.auto import tqdm
+
+from data import db_session  # db engine
+
+from main_recipes_api import add_new_product
+
 
 def setDriver():  # Запуск драйвера
     driver = webdriver.Chrome()
     return driver
-
-
-class Product:
-    def __init__(self, name, price, image, type):
-        self.name = name
-        self.price = price
-        self.image = image
-        self.type = type
 
 
 def check_numbers_of_pages(url, driver):  # Нахождение количества страниц в категории
@@ -25,15 +23,17 @@ def check_numbers_of_pages(url, driver):  # Нахождение количес�
     return numbers_of_pages
 
 
-def parse_products(product_url, not_parsing_pages):  # Парсинг продуктов из категории
+def parse_products_vkusvill(product_url, not_parsing_pages):  # Парсинг продуктов из категории
+    db_session.global_init("../db/recipes_data.db")  # connecting to db
+
     driver = setDriver()
     driver.get(product_url)
     product_list = list()
     url_list = list()
     elements_of_types_of_food = driver.find_elements(By.CLASS_NAME, 'VVCategCards2020__Col')  # Поиск всех категорий
-    for i in range(0, len(elements_of_types_of_food)):
+    for i in tqdm(range(0, len(elements_of_types_of_food))):
         url_list.append(elements_of_types_of_food[i].find_element(By.TAG_NAME, 'a').get_attribute('href'))
-    for i in range(4, len(url_list)):
+    for i in tqdm(range(4, len(url_list))):
         if i in not_parsing_pages:
             continue
         driver.get(url_list[i])
@@ -54,11 +54,14 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
                 image = k.find_element(By.CSS_SELECTOR, '.ProductCard__imageImg.lazyload').get_attribute('src')
                 name = k.find_element(By.CLASS_NAME, 'ProductCard__link').text
                 price = k.find_element(By.CLASS_NAME, 'Price__value').text
-                product_list.append(Product(name, price, image, type_of_product))
-    return product_list
+                add_new_product(name, 'Вкусвилл', price, type_of_product, image)
 
 
-product_list = list()
-url = 'https://vkusvill.ru/goods/'
-not_parsing_pages = [7, 8, 9, 24, 25, 26, 27, 28, 30]
-product_list = parse_products(url, not_parsing_pages)
+def main():
+    url = 'https://vkusvill.ru/goods/'
+    not_parsing_pages = [7, 8, 9, 24, 25, 26, 27, 28, 30]
+    parse_products_vkusvill(url, not_parsing_pages)
+
+
+if __name__ == '__main__':
+    main()

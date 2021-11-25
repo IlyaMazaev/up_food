@@ -11,6 +11,7 @@ class Product(SqlAlchemyBase):
                            primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     price = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    type = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     tags = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     photo_address = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=f'static/img/file_error.jpg')
     store = sqlalchemy.Column(sqlalchemy.String, nullable=False)

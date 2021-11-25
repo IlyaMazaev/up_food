@@ -150,7 +150,7 @@ def add_new_recipe(name, ingredients, how_to_cook, photo_address=''):
         db_sess.commit()
 
 
-def add_new_product(name, store, price, photo_address=''):
+def add_new_product(name, store, price, type, photo_address=''):
     '''void function, adds new product to the db
         needs product name, store and price
         tags are being created using create_tags_for_line(name)
@@ -165,6 +165,7 @@ def add_new_product(name, store, price, photo_address=''):
         product = Product(name=name,
                           store=store,
                           price=price,
+                          type=type,
                           tags=create_tags_for_line(name))
         product.set_photo_address(photo_address)
         db_sess.add(product)

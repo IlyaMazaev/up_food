@@ -2,30 +2,30 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
+from tqdm.auto import tqdm
+
+from data import db_session  # db engine
+
+from main_recipes_api import add_new_product
+
 
 def setDriver():  # Запуск драйвера
     driver = webdriver.Chrome()
     return driver
 
 
-class Product:
-    def __init__(self, name, price, image, type_of_product):
-        self.name = name
-        self.price = price
-        self.image = image
-        self.type = type_of_product
-
-
 def parse_products(product_url, not_parsing_pages):  # Парсинг продуктов из категории
+    db_session.global_init("../db/recipes_data.db")  # connecting to db
+
     driver = setDriver()
     driver.get(product_url)
     product_list = list()
     url_list = list()
     elements_of_types_of_food = driver.find_element(By.CSS_SELECTOR, '.catalog__list').find_elements(By.TAG_NAME,
                                                                                                      'a')  # Поиск всех категорий
-    for i in range(0, len(elements_of_types_of_food)):
+    for i in tqdm(range(0, len(elements_of_types_of_food))):
         url_list.append(elements_of_types_of_food[i].get_attribute('href'))
-    for i in range(4, len(url_list)):
+    for i in tqdm(range(4, len(url_list))):
         if i in not_parsing_pages:
             continue
         driver.get(url_list[i])
@@ -48,11 +48,14 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
                     image = None
                 name = k.find_element(By.CSS_SELECTOR, '.product-card__title').text
                 price = k.find_element(By.CSS_SELECTOR, '.price-new').text
-                product_list.append(Product(name, price, image, type_of_product))
-    return product_list
+                add_new_product(name, 'Перекрёсток', price, type_of_product, image)
 
 
-product_list = list()
-url = 'https://www.perekrestok.ru/cat/'
-not_parsing_pages = [7, 14, 23, 24, 25, 26, 27, 29]
-product_list = parse_products(url, not_parsing_pages)
+def main():
+    url = 'https://www.perekrestok.ru/cat/'
+    not_parsing_pages = [7, 14, 23, 24, 25, 26, 27, 29]
+    parse_products(url, not_parsing_pages)
+
+
+if __name__ == '__main__':
+    main()
