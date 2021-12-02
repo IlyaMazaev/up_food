@@ -19,7 +19,6 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
 
     driver = setDriver()
     driver.get(product_url)
-    product_list = list()
     url_list = list()
     elements_of_types_of_food = driver.find_element(By.CSS_SELECTOR, '.catalog__list').find_elements(By.TAG_NAME,
                                                                                                      'a')  # Поиск всех категорий

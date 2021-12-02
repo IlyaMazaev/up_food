@@ -129,7 +129,7 @@ def create_tags_for_line(line):
     return line.lower() + ';' + ';'.join(line.split()).lower() + tags.lower()
 
 
-def add_new_recipe(name, ingredients, how_to_cook, photo_address=''):
+def add_new_recipe(name, ingredients, how_to_cook, portions, time, types, photo_address=''):
     '''void function, adds new recipe to the db
     needs recipe name, ingredients in format: 'ingr1;ingr2;ingr3'
     tags are being created using create_tags_for_line(name)
@@ -144,7 +144,10 @@ def add_new_recipe(name, ingredients, how_to_cook, photo_address=''):
         recipe = Recipe(name=name,
                         ingredients=ingredients,
                         how_to_cook=how_to_cook,
-                        tags=create_tags_for_line(name))
+                        tags=create_tags_for_line(name),
+                        portions=portions,
+                        time=time,
+                        types=types)
         recipe.set_photo_address(photo_address)
         db_sess.add(recipe)
         db_sess.commit()

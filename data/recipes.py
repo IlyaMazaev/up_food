@@ -14,6 +14,9 @@ class Recipe(SqlAlchemyBase):
     how_to_cook = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     tags = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     photo_address = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=f'static/img/file_error.jpg')
+    portions = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    time = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    types = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     # some additional fields, currently not used
     date_time_added = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     creator_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
