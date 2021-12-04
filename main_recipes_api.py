@@ -11,12 +11,12 @@ from data.recipes import Recipe  # orm Recipe class
 
 def main():
     db_session.global_init("db/recipes_data.db")  # connecting to db
-    '''
+
     db_sess = db_session.create_session()
-    print(db_sess.query(Product).all())
     '''
-    db_sess = db_session.create_session()
-    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).all())
+    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first())
+    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first().get_json_data())
+    '''
     '''
     add_new_recipe('Домашние беляши',
                    'Вода - 500 г; Масло растительное - 2 ст. ложки;Мука - 500 г;Соль - 1 ч. л.;Сахар - по вкусу (немного);Дрожжи сухие - 1 ч. л.;Мясо (говядина и свинина) - 400-500 г;Лук репчатый - 200-300 г;Перец черный - по вкусу;Соль - по вкусу',
@@ -70,6 +70,14 @@ def main():
     add_new_recipe('', '', '')
     add_new_recipe('', '', '')
     '''
+    add_new_recipe('Пастила3',
+                   'Желатин - 30 г;Вода - 1 ст.;Сахар - 420 г;Патока или сироп - по вкусу;Соль - 0.25 ч.л.;Яичный белок - 2 шт.;Ванильный сахар - 1 уп.;Сахарная пудра со вкусом ванили - 0.5 уп.;Крахмал - 25 г',
+                   {'Желатин': [10, 20], 'Сахар': [2, 4]},
+                   'Желатин залить ½ ст. горячей воды и мешать до полного растворения.\n На огонь поставить кастрюлю с сахаром, сиропом, солью и половиной стакана воды. Помешивая, варить на среднем огне около 7 минут.\n Как только сахар расплавится, выключить огонь и добавить желатин. Остудить смесь до комнатной температуры.\n Взбить белки в глубокой посуде, влить туда всю жидкость из кастрюли и взбивать миксером на большой скорости. Когда белки с желатиновой смесью поднимутся, добавить туда ванильный сахар и продолжать взбивать до максимально густой массы.\n Затем смешать крахмал и сахарную пудру. Взять застеленный бумагой для выпекания и смазанный маслом противень и присыпать его смесью из крахмала и сахарной пудры.\n Вылить массу на противень и равномерно распределить ее по всей поверхности. Массу присыпать смесью из крахмала и сахарной пудры и, ничем не накрывая и не убирая в холодильник, оставить пастилу настояться минимум на 3-4 часа.\n Из готовой пастилы формами для печенья или острым ножом сделать нужные вам формы.',
+                   '',
+                   '',
+                   '')
+    print(get_products_bonded_with_recipe(db_sess.query(Recipe).filter(Recipe.name.like('Пастила3')).first()))
 
     product_prices_sum = 0  # stores sum of ingredients prices
     for found_recipe in recipe_tags_search(input()):  # for all matching recipes
@@ -86,8 +94,8 @@ def main():
 
 
 def get_all_word_forms(word):
-    '''input: a word ex:'makaroni'
-        returns list of word's forms ex: ['makaronov', 'makarons']'''
+    """input: a word ex:'makaroni'
+        returns list of word's forms ex: ['makaronov', 'makarons']"""
 
     morph = pymorphy2.MorphAnalyzer()
     # getting an infinitive(normal) form of the word
@@ -109,10 +117,10 @@ def get_all_word_forms(word):
 
 
 def create_tags_for_line(line):
-    '''creating tags for line of words
+    """creating tags for line of words
     can be used with any type of sentences, names, and such things
     returns line of tags looking like this: 'line;tag1;tag2;tag3'
-     tags in this case are the words used in line and their grammatical forms'''
+     tags in this case are the words used in line and their grammatical forms"""
     # replaces some symbols
     line = line.replace("'", '')
     line = line.replace('"', '')
@@ -129,11 +137,14 @@ def create_tags_for_line(line):
     return line.lower() + ';' + ';'.join(line.split()).lower() + tags.lower()
 
 
-def add_new_recipe(name, ingredients, how_to_cook, portions, time, types, photo_address=''):
-    '''void function, adds new recipe to the db
+def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions, time, types, photo_address=''):
+    """void function, adds new recipe to the db
     needs recipe name, ingredients in format: 'ingr1;ingr2;ingr3'
     tags are being created using create_tags_for_line(name)
-    '''
+
+    format of bonded_ingredients dict:
+    {ingredient name: [matching product ids in db]}
+    """
     db_sess = db_session.create_session()
     # if there are a recipe with the name like that
     if db_sess.query(Recipe).filter(Recipe.name == name).first():
@@ -147,17 +158,18 @@ def add_new_recipe(name, ingredients, how_to_cook, portions, time, types, photo_
                         tags=create_tags_for_line(name),
                         portions=portions,
                         time=time,
-                        types=types)
+                        types=types,
+                        bonded_ingredients=bonded_ingredients)
         recipe.set_photo_address(photo_address)
         db_sess.add(recipe)
         db_sess.commit()
 
 
 def add_new_product(name, store, price, type, photo_address=''):
-    '''void function, adds new product to the db
+    """void function, adds new product to the db
         needs product name, store and price
         tags are being created using create_tags_for_line(name)
-        '''
+        """
     db_sess = db_session.create_session()
     # if there are a product with the name like that
     if db_sess.query(Product).filter(Product.name == name).first():
@@ -176,9 +188,9 @@ def add_new_product(name, store, price, type, photo_address=''):
 
 
 def recipe_tags_search(search_input):
-    '''input: searching request
+    """input: searching request
     output: prints found recipes and opens photos
-    returns a list of found Recipe objects '''
+    returns a list of found Recipe objects """
 
     recipes_found = list()  # list which contains all found recipes
     for word in search_input.split():  # each word is an separated key
@@ -202,9 +214,10 @@ def recipe_tags_search(search_input):
 
 
 def products_for_recipe_search(search_input):
-    '''input: searching request
+    """
+    input: searching request
     output: prints found products
-    returns a list of found Product with matching name'''
+    returns a list of found Product with matching name"""
 
     products_found = list()  # list which contains all found recipes
     search_query = []
@@ -223,6 +236,22 @@ def products_for_recipe_search(search_input):
     # returns a list of found Recipe objects
     print(products_found)
     return products_found
+
+
+def get_products_bonded_with_recipe(recipe):
+    """returns dict with Product objects bonded with recipe
+    return format
+    {ingredient name: [Product, Product]}"""
+    db_sess = db_session.create_session()
+
+    bonded_products = dict()
+    for recipe_name, product_ids in recipe.bonded_ingredients.items():
+        bonded_products[recipe_name] = []
+        for product_id in product_ids:
+            bonded_products[recipe_name].append(db_sess.query(Product).get(product_id))
+
+    print(bonded_products)
+    return bonded_products
 
 
 if __name__ == '__main__':

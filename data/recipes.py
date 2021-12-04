@@ -1,4 +1,5 @@
 import datetime
+
 import sqlalchemy
 
 from data.db_session import SqlAlchemyBase
@@ -17,15 +18,16 @@ class Recipe(SqlAlchemyBase):
     portions = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     time = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     types = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    bonded_ingredients = sqlalchemy.Column(sqlalchemy.JSON, nullable=False)
     # some additional fields, currently not used
     date_time_added = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     creator_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     some_additional_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_photo_address(self, address=''):
-        '''sets photo address
+        """sets photo address
         if it's given, sets it
-        if not by default sets name 'file_recipe name.jpg' in static/img/ folder '''
+        if not by default sets name 'file_recipe name.jpg' in static/img/ folder """
         if address:
             self.photo_address = address
         else:
@@ -33,3 +35,18 @@ class Recipe(SqlAlchemyBase):
 
     def __repr__(self):
         return f'Recipe({str(self.name)})'
+
+    def get_json_data(self):
+        return {'id': self.id,
+                'name': self.name,
+                'ingredients': self.ingredients,
+                'how_to_cook': self.how_to_cook,
+                'tags': self.tags,
+                'photo_address': self.photo_address,
+                'portions': self.portions,
+                'time': self.time,
+                'types': self.types,
+                'date_time_added': self.date_time_added,
+                'creator_info': self.creator_info,
+                'some_additional_info': self.some_additional_info
+                }

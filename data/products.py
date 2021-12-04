@@ -1,4 +1,5 @@
 import datetime
+
 import sqlalchemy
 
 from data.db_session import SqlAlchemyBase
@@ -21,9 +22,9 @@ class Product(SqlAlchemyBase):
     some_additional_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_photo_address(self, address=''):
-        '''sets photo address
+        """sets photo address
         if it's given, sets it
-        if not by default sets name 'file_recipe name.jpg' in static/img/ folder '''
+        if not by default sets name 'file_recipe name.jpg' in static/img/ folder """
         if address:
             self.photo_address = address
         else:
@@ -31,3 +32,17 @@ class Product(SqlAlchemyBase):
 
     def __repr__(self):
         return f'Product({str(self.name)}, {str(self.store)}, {self.price})'
+
+    def get_json_data(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'price': self.price,
+            'type': self.type,
+            'tags': self.tags,
+            'photo_address': self.photo_address,
+            'store': self.store,
+            'date_time_added': self.date_time_added,
+            'creator_info': self.creator_info,
+            'some_additional_info': self.some_additional_info
+        }
