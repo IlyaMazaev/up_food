@@ -24,7 +24,7 @@ def check_numbers_of_pages(url, driver):  # Нахождение количес�
 
 
 def parse_products_vkusvill(product_url, not_parsing_pages):  # Парсинг продуктов из категории
-    db_session.global_init("../db/recipes_data.db")  # connecting to db
+    db_session.global_init("../db/products_data.db")  # connecting to db
 
     driver = setDriver()
     driver.get(product_url)

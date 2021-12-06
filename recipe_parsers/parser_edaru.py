@@ -1,11 +1,9 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-
 from tqdm.auto import tqdm
 
 from data import db_session  # db engine
-
 from main_recipes_api import add_new_recipe
 
 
@@ -56,7 +54,9 @@ def parse_recipes(product_url):  # Парсинг продуктов из кат
         time = driver.find_element(By.CLASS_NAME, 'css-my9yfq').text  # Получение времени готовки
         portions = driver.find_element(By.XPATH,
                                        '//*[@id="__next"]/main/div/div/div/div/div[1]/div[2]/div[3]/div[1]/span[1]/span[2]/span').text  # Получение порции
-        add_new_recipe(name, ingredients, how_to_cook, portions, time, types, image)
+
+        add_new_recipe(name, ';'.join(list(map(lambda x: ' - '.join(x.split('\n')), ingredients))), {'': ''},
+                       ';'.join(how_to_cook), portions, time, ';'.join(types), image)
         print(name)
 
 
