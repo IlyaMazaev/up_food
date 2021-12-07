@@ -34,8 +34,8 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
         sites_urls = list()
         for l in elements_of_types_of_food_next:
             sites_urls.append(l.find_element(By.TAG_NAME, 'a').get_attribute('href'))
-        for h in sites_urls:
-            driver.get(h)  # Переход в подкатегорию
+        for h in range(0, len(sites_urls) - 1):
+            driver.get(sites_urls[h])  # Переход в подкатегорию
             driver.implicitly_wait(5)  # Проверка на загруженность страницы
             product_card = driver.find_elements(By.CSS_SELECTOR,
                                                 '.sc-jrAGrp.kAEaPn')  # Поиск карточки продукта и названия категории
