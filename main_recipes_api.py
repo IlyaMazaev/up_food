@@ -10,9 +10,14 @@ from data.recipes import Recipe  # orm Recipe class
 
 
 def main():
-    db_session.global_init("db/recipes_data_test.db")  # connecting to db
+    db_session.global_init("db/products_data.db")  # connecting to db
 
     db_sess = db_session.create_session()
+    '''
+    print(1)
+    print(products_for_recipe_search('Аджика'))
+    print(2)
+    '''
     '''
     print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first())
     print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first().get_json_data())
@@ -186,7 +191,7 @@ def main():
                    '',
                    '')
     '''
-    print(get_products_bonded_with_recipe(db_sess.query(Recipe).filter(Recipe.name.like('Пастила3')).first()))
+    # print(get_products_bonded_with_recipe(db_sess.query(Recipe).filter(Recipe.name.like('Пастила3')).first()))
 
     product_prices_sum = 0  # stores sum of ingredients prices
     for found_recipe in recipe_tags_search(input()):  # for all matching recipes
@@ -334,11 +339,16 @@ def products_for_recipe_search(search_input):
         if word not in ['и', 'с', 'из', 'для']:  # filtering prepositions
             db_sess = db_session.create_session()
 
-            if not search_query:
+
                 # if search_query was empty creates it with search by first word from request
-                search_query = db_sess.query(Product).filter(Product.name.like('%' + word.lower() + '%')).all()
+            search_query = db_sess.query(Product).filter(Product.tags.ilike('%' + word.lower() + '%')).all()
+
+            '''
             # filters the list and leaves only products which names contain the word
-            search_query = list(filter(lambda x: word in list(map(lambda x: x.lower(), x.name.split())), search_query))
+            
+            print(list(filter(lambda x: word.lower() in list(map(lambda x: x.lower(), x.name.split())), search_query)))
+            search_query = list(filter(lambda x: word.lower() in list(map(lambda x: x.lower(), x.name.split())), search_query))
+            '''
 
             for found_product in search_query:  # found products for word
                 products_found.append(found_product)

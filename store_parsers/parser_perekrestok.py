@@ -24,7 +24,7 @@ def parse_products(product_url, not_parsing_pages):  # Парсинг проду
                                                                                                      'a')  # Поиск всех категорий
     for i in tqdm(range(0, len(elements_of_types_of_food))):
         url_list.append(elements_of_types_of_food[i].get_attribute('href'))
-    for i in tqdm(range(4, len(url_list))):
+    for i in tqdm(range(5, len(url_list))):
         if i in not_parsing_pages:
             continue
         driver.get(url_list[i])
