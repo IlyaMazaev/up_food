@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <main>
+        <div class="main_class">
+            <div class="title_body">
+                <div class="image_class">
+                    <img class="main_image" src={% static "img/file_borch.jpg" %}>
+                </div>
+                <div class="main_title_class">
+                    <span itemprop="name">
+                        <h1 class="main_title_h1">Борщ с говядиной</h1>
+                    </span>
+                </div>
+                <div class="tetx_type">
+                    <span class="text">
+                        <span class="text">{{ recipe.types }}</span>
+                    </span>
+                </div>
+                <div class="additional_information">
+                    <span title class="text">
+                        <span itemprop="portion_count">
+                            <span>Порций: {{ recipe.portions }}</span>
+                            <span class="clock-icon">Время: {{ recipe.time }}</span>
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <div class="main_body">
+                <div class="ingredients_class">
+                    <div class="ingredients_title">
+                        <h3 class="ing_title">Ингредиенты:</h3>
+                    </div>
+                    <div class="ingredients">
+                        {% for i in ing %}
+                        <div class="recipe_ing">
+                            <span title="" class="rec_ing">
+                                <span itemprop="recipeIngredient">{{ i}}</span>
+                            </span>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                    <button class="button">Купить продукты</button>
+                </div>
+                <div class="how_to_class">
+                    <div class="how_to_title">
+                        <h3 class="how_title">Инструкция приготовления:</h3>
+                    </div>
+                    <div class="how_to_body">
+                        <span itemprop="text">
+                            {{ recipe.how_to_cook }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

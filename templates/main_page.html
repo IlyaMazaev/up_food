@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm">
+            {% if request.user.is_authenticated %}
+                <h1 class="mt-5">Добро пожаловать, {{ request.user }}!</h1>
+            {% else %}
+                <h1 class="mt-5">Добро пожаловать!</h1>
+            {% endif %}
+            <p class="lead"></p>
+        </div>
+        <form method="GET" class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Поиск..." id="search_box" name="q">
+        </form>
+        <div class='table_recipes'>
+            <div class='recipe'>
+                <div class='recipe_image_card'>
+                    <a class='recipe_image_link' href='/recipe/'>
+                        <img alt="Name" class='image' src={% static recipe.photo_address %}>
+                    </a>
+                </div>
+                <div class=''>
+                    <div class='recipe_information_name'>
+                        <a href='/recipe/?q={{ q }}' class='text'>
+                            <h4 title class="text">
+                                {{ recipe.name }}
+                            </h4>
+                        </a>
+                    </div>
+                    <div class='recipe_information'></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

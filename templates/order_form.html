@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <main>
+        <div class="main_class">
+            <div class="title_body">
+                <div class="image">
+                    <img src={% static recipe.photo_address %}>
+                </div>
+                <div class="title">
+                    <h4>{{ recipe.name }}</h4>
+                </div>
+            </div>
+            <div class="products">
+                <select>
+                    <option></option>
+                </select>
+            </div>
+            <div class="pagedown_body">
+
+            </div>
+        </div>
+    </main>
+{% endblock %}
