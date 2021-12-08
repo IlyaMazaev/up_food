@@ -2,7 +2,7 @@ import datetime
 
 import sqlalchemy
 
-from data.db_session import SqlAlchemyBase
+from database_work.data.db_session import SqlAlchemyBase
 
 
 class Product(SqlAlchemyBase):

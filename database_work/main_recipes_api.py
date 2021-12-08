@@ -4,9 +4,9 @@ import os
 import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
 
-from data import db_session  # db engine
-from data.products import Product  # orm Recipe class
-from data.recipes import Recipe  # orm Recipe class
+from database_work.data import db_session  # db engine
+from database_work.data.products import Product  # orm Recipe class
+from database_work.data.recipes import Recipe  # orm Recipe class
 
 
 def main():
