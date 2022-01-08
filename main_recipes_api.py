@@ -5,7 +5,7 @@ import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
 
 from data import db_session  # db engine
-from data.products import Product  # orm Recipe class
+from data.products import Product  # orm Product class
 from data.recipes import Recipe  # orm Recipe class
 
 
@@ -13,10 +13,10 @@ def main():
     db_session.global_init("db/recipes_data.db")  # connecting to db
 
     db_sess = db_session.create_session()
-
+    '''
     for el in products_for_recipe_search(input()):
         print(el)
-
+    '''
     '''
     print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first())
     print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first().get_json_data())
@@ -279,6 +279,7 @@ def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions,
         recipe.set_photo_address(photo_address)
         db_sess.add(recipe)
         db_sess.commit()
+        print(f'added recipe {name}')
 
 
 def add_new_product(name, store, price, type, photo_address=''):
@@ -341,8 +342,7 @@ def products_for_recipe_search(search_input):
         if word not in ['и', 'с', 'из', 'для']:  # filtering prepositions
             db_sess = db_session.create_session()
 
-
-                # if search_query was empty creates it with search by first word from request
+            # if search_query was empty creates it with search by first word from request
             search_query = db_sess.query(Product).filter(Product.tags.ilike('%' + word.lower() + '%')).all()
 
             '''
