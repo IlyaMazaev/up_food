@@ -8,11 +8,152 @@ from data import db_session  # db engine
 from data.products import Product  # orm Product class
 from data.recipes import Recipe  # orm Recipe class
 
+from flask import Flask, jsonify, send_file
+from flask_restful import reqparse, abort, Api, Resource
+
+recipe_post_parser = reqparse.RequestParser()
+recipe_post_parser.add_argument('name', required=True)
+recipe_post_parser.add_argument('ingredients', required=True)
+recipe_post_parser.add_argument('how_to_cook', required=True)
+recipe_post_parser.add_argument('portions', required=True)
+recipe_post_parser.add_argument('time', required=True)
+recipe_post_parser.add_argument('types', required=True)
+recipe_post_parser.add_argument('bonded_ingredients', required=True)
+recipe_post_parser.add_argument('photo_address', required=False)
+
+recipe_tags_search_parser = reqparse.RequestParser()
+recipe_tags_search_parser.add_argument('search_request', required=False)
+
+
+class RecipeResource(Resource):
+    @staticmethod
+    def abort_if_not_found(recipe_id):
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+        if not recipe:
+            abort(404, message=f"Recipe {recipe_id} not found")
+
+    def get(self, recipe_id):
+        self.abort_if_not_found(recipe_id)
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+        return jsonify({'recipe': recipe.to_dict()})
+
+    def delete(self, recipe_id):
+        self.abort_if_not_found(recipe_id)
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+        session.delete(recipe)
+        session.commit()
+        return jsonify({'success': 'OK'})
+
+
+class RecipeImageResource(Resource):
+    @staticmethod
+    def abort_if_not_found(recipe_id):
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+        if not recipe:
+            abort(404, message=f"Recipe {recipe_id} not found")
+
+    def get(self, recipe_id):
+        self.abort_if_not_found(recipe_id)
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+        return send_file(recipe.photo_address, mimetype='image/jpeg')
+
+
+class RecipeListResource(Resource):
+    @staticmethod
+    def get():
+        session = db_session.create_session()
+        recipes = session.query(Recipe).all()
+        return jsonify({'recipes': [item.to_dict() for item in recipes]})
+
+    @staticmethod
+    def post():
+        args = recipe_post_parser.parse_args()
+        add_new_recipe(name=args['name'],
+                       ingredients=args['ingredients'],
+                       how_to_cook=args['how_to_cook'],
+                       portions=args['portions'],
+                       time=args['time'],
+                       types=args['types'],
+                       bonded_ingredients=args['bonded_ingredients'],
+                       photo_address=args['photo_address'])
+
+        return jsonify({'success': 'OK'})
+
+
+class SearchableRecipeListResource(Resource):
+    @staticmethod
+    def get():
+        args = recipe_tags_search_parser.parse_args()
+
+        # session = db_session.create_session()
+        print(args['search_request'])
+        recipes = recipe_tags_search(args['search_request'])
+
+        return jsonify({'recipes': [item.to_dict() for item in recipes]})
+
+
+class ProductResource(Resource):
+    @staticmethod
+    def abort_if_not_found(product_id):
+        session = db_session.create_session()
+        product = session.query(Product).get(product_id)
+        if not product:
+            abort(404, message=f"Recipe {product_id} not found")
+
+    def get(self, product_id):
+        self.abort_if_not_found(product_id)
+        session = db_session.create_session()
+        product = session.query(Product).get(product_id)
+        return jsonify({'product': product.to_dict()})
+
+
+class ProductListResource(Resource):
+    @staticmethod
+    def get():
+        session = db_session.create_session()
+        products = session.query(Product).all()
+        return jsonify({'products': [item.to_dict() for item in products]})
+
+
+class ProductsBondedListResource(Resource):
+    @staticmethod
+    def abort_if_not_found(recipe_id):
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+        if not recipe:
+            abort(404, message=f"Recipe {recipe_id} not found")
+
+    def get(self, recipe_id):
+        self.abort_if_not_found(recipe_id)
+        session = db_session.create_session()
+        recipe = session.query(Recipe).get(recipe_id)
+
+        return jsonify({'products': get_products_bonded_with_recipe(recipe)})
+
 
 def main():
     db_session.global_init("db/recipes_data.db")  # connecting to db
-
     db_sess = db_session.create_session()
+
+    app = Flask(__name__)
+    api = Api(app)
+
+    api.add_resource(RecipeResource, '/api/recipes/<int:recipe_id>')
+    api.add_resource(RecipeListResource, '/api/recipes')
+    api.add_resource(SearchableRecipeListResource, '/api/recipes/search')
+    api.add_resource(RecipeImageResource, '/api/recipes/photo/<int:recipe_id>')
+
+    api.add_resource(ProductResource, '/api/products/<int:product_id>')
+    api.add_resource(ProductListResource, '/api/products')
+    api.add_resource(ProductsBondedListResource, '/api/products/for_recipe/<int:recipe_id>')
+
+    app.run()
+
     '''
     for el in products_for_recipe_search(input()):
         print(el)
@@ -49,8 +190,8 @@ def get_all_word_forms(word):
     all_forms_set = {str(normal_form_word)}
 
     # source: https://github.com/kmike/pymorphy2/issues/74
-    parseList = morph.parse(word)  # list of all possible parses
-    for parse in parseList:
+    parse_list = morph.parse(word)  # list of all possible parses
+    for parse in parse_list:
         lexeme = parse.lexeme
         for form in lexeme:
             all_forms_set.add(str(form.word))
@@ -196,7 +337,7 @@ def get_products_bonded_with_recipe(recipe):
     for recipe_name, product_ids in recipe.bonded_ingredients.items():
         bonded_products[recipe_name] = []
         for product_id in product_ids:
-            bonded_products[recipe_name].append(db_sess.query(Product).get(product_id))
+            bonded_products[recipe_name].append(db_sess.query(Product).get(product_id).to_dict())
 
     print(bonded_products)
     return bonded_products

@@ -1,11 +1,13 @@
 import datetime
 
 import sqlalchemy
+from sqlalchemy_serializer import SerializerMixin
+
 
 from data.db_session import SqlAlchemyBase
 
 
-class Recipe(SqlAlchemyBase):
+class Recipe(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'recipes'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -31,7 +33,7 @@ class Recipe(SqlAlchemyBase):
         if address:
             self.photo_address = address
         else:
-            self.photo_address = f'static/img/file_{str(self.name)}.jpg'
+            self.photo_address = f'static/img/file_{str(self.id)}.jpg'
 
     def __repr__(self):
         return f'Recipe({str(self.name)})'
@@ -50,3 +52,4 @@ class Recipe(SqlAlchemyBase):
                 'creator_info': self.creator_info,
                 'some_additional_info': self.some_additional_info
                 }
+

@@ -1,11 +1,12 @@
 import datetime
 
 import sqlalchemy
+from sqlalchemy_serializer import SerializerMixin
 
 from data.db_session import SqlAlchemyBase
 
 
-class Product(SqlAlchemyBase):
+class Product(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'products'
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
@@ -28,7 +29,7 @@ class Product(SqlAlchemyBase):
         if address:
             self.photo_address = address
         else:
-            self.photo_address = f'static/img/file_{str(self.name)}.jpg'
+            self.photo_address = f'static/img/file_{str(self.id)}.jpg'
 
     def __repr__(self):
         return f'Product(id:{str(self.id)}, {str(self.name)}, {str(self.store)}, {self.price}₽)'
