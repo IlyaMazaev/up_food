@@ -3,14 +3,14 @@ import os
 
 import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
+from flask import Flask, jsonify, send_file
+from flask_restful import reqparse, abort, Api, Resource
 
 from data import db_session  # db engine
 from data.products import Product  # orm Product class
 from data.recipes import Recipe  # orm Recipe class
 
-from flask import Flask, jsonify, send_file
-from flask_restful import reqparse, abort, Api, Resource
-
+# arg parser for adding new recipes
 recipe_post_parser = reqparse.RequestParser()
 recipe_post_parser.add_argument('name', required=True)
 recipe_post_parser.add_argument('ingredients', required=True)
@@ -21,25 +21,43 @@ recipe_post_parser.add_argument('types', required=True)
 recipe_post_parser.add_argument('bonded_ingredients', required=True)
 recipe_post_parser.add_argument('photo_address', required=False)
 
+# arg parser for recipe searching
 recipe_tags_search_parser = reqparse.RequestParser()
 recipe_tags_search_parser.add_argument('search_request', required=False)
 
 
 class RecipeResource(Resource):
+    """
+    Resource class for REST api
+    """
+
     @staticmethod
     def abort_if_not_found(recipe_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        func used in get and delete
+        :param recipe_id:
+        """
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
     def get(self, recipe_id):
+        """
+        sends data in json of one recipe by its id given as param
+        :param recipe_id:
+        """
         self.abort_if_not_found(recipe_id)
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
         return jsonify({'recipe': recipe.to_dict()})
 
     def delete(self, recipe_id):
+        """
+        deletes recipe with id given as param
+        :param recipe_id:
+        """
         self.abort_if_not_found(recipe_id)
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
@@ -49,14 +67,27 @@ class RecipeResource(Resource):
 
 
 class RecipeImageResource(Resource):
+    """
+    REST resource class needed to work with images of recipes
+    """
+
     @staticmethod
     def abort_if_not_found(recipe_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        same as in RecipeResource class
+        :param recipe_id:
+        """
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
     def get(self, recipe_id):
+        """
+        sends image of recipe with id given as param
+        :param recipe_id:
+        """
         self.abort_if_not_found(recipe_id)
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
@@ -64,14 +95,25 @@ class RecipeImageResource(Resource):
 
 
 class RecipeListResource(Resource):
+    """
+    Resource class for REST api
+    works with multiple recipes(lists)
+    """
+
     @staticmethod
     def get():
+        """
+        sends list with all recipes in db
+        """
         session = db_session.create_session()
         recipes = session.query(Recipe).all()
         return jsonify({'recipes': [item.to_dict() for item in recipes]})
 
     @staticmethod
     def post():
+        """
+        adds new recipe with args given as parameters of web post request
+        """
         args = recipe_post_parser.parse_args()
         add_new_recipe(name=args['name'],
                        ingredients=args['ingredients'],
@@ -86,8 +128,17 @@ class RecipeListResource(Resource):
 
 
 class SearchableRecipeListResource(Resource):
+    """
+    part of REST api, this one is for searching
+    """
+
     @staticmethod
     def get():
+        """
+        gets search request as param of get post request
+        it's basically recipe_tags_search() function wrapped in REST api format
+        sends back all found recipes as jsons
+        """
         args = recipe_tags_search_parser.parse_args()
 
         # session = db_session.create_session()
@@ -98,14 +149,27 @@ class SearchableRecipeListResource(Resource):
 
 
 class ProductResource(Resource):
+    """
+    Resource class for REST api
+    """
+
     @staticmethod
     def abort_if_not_found(product_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        same as in RecipeResource
+        :param product_id:
+        """
         session = db_session.create_session()
         product = session.query(Product).get(product_id)
         if not product:
             abort(404, message=f"Recipe {product_id} not found")
 
     def get(self, product_id):
+        """
+        sends data in json of one product by its id given as param
+        :param product_id:
+        """
         self.abort_if_not_found(product_id)
         session = db_session.create_session()
         product = session.query(Product).get(product_id)
@@ -113,22 +177,40 @@ class ProductResource(Resource):
 
 
 class ProductListResource(Resource):
+    """
+    Resource class for REST api
+    works with multiple products(lists)
+    """
     @staticmethod
     def get():
+        """
+        sends list with all recipes in db
+        """
         session = db_session.create_session()
         products = session.query(Product).all()
         return jsonify({'products': [item.to_dict() for item in products]})
 
 
 class ProductsBondedListResource(Resource):
+    """
+    class to wrap up get_products_bonded_with_recipe() func in REST api format
+    """
     @staticmethod
     def abort_if_not_found(recipe_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        :param recipe_id:
+        """
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
     def get(self, recipe_id):
+        """
+        returns all products bonded to a recipe in json format
+        :param recipe_id:
+        """
         self.abort_if_not_found(recipe_id)
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
