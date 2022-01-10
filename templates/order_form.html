@@ -12,9 +12,13 @@
                 </div>
             </div>
             <div class="products">
+            {% for i in ing %}
                 <select>
-                    <option></option>
+                    {% for k in prod_dict.i %}
+                    <option>{{ k.name }}</option>
+                    {% endfor %}
                 </select>
+            {% endfor %}
             </div>
             <div class="pagedown_body">
 
