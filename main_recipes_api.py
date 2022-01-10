@@ -326,8 +326,10 @@ def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions,
                         time=time,
                         types=types,
                         bonded_ingredients=bonded_ingredients)
-        recipe.set_photo_address(photo_address)
+
         db_sess.add(recipe)
+        db_sess.commit()
+        recipe.set_photo_address(photo_address)
         db_sess.commit()
         print(f'added recipe {name}')
 

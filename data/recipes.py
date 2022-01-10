@@ -29,7 +29,7 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
     def set_photo_address(self, address=''):
         """sets photo address
         if it's given, sets it
-        if not by default sets name 'file_recipe name.jpg' in static/img/ folder """
+        if not by default sets name 'file_recipe id.jpg' in static/img/ folder """
         if address:
             self.photo_address = address
         else:
