@@ -1,6 +1,8 @@
 from django.apps import AppConfig
 
 
-class RecipeConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
+class UserConfig(AppConfig):
     name = 'recipe'
+
+    def ready(self):
+        import recipe.signals
