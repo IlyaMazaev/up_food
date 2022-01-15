@@ -25,6 +25,9 @@ recipe_post_parser.add_argument('photo_address', required=False)
 recipe_tags_search_parser = reqparse.RequestParser()
 recipe_tags_search_parser.add_argument('search_request', required=False)
 
+app = Flask(__name__)
+app.config['SECRET_KEY'] = '9CB2FA9ED59693626BC2'
+
 
 class RecipeResource(Resource):
     """
@@ -181,6 +184,7 @@ class ProductListResource(Resource):
     Resource class for REST api
     works with multiple products(lists)
     """
+
     @staticmethod
     def get():
         """
@@ -195,6 +199,7 @@ class ProductsBondedListResource(Resource):
     """
     class to wrap up get_products_bonded_with_recipe() func in REST api format
     """
+
     @staticmethod
     def abort_if_not_found(recipe_id):
         """
@@ -218,45 +223,10 @@ class ProductsBondedListResource(Resource):
         return jsonify({'products': get_products_bonded_with_recipe(recipe)})
 
 
-def main():
-    db_session.global_init("db/recipes_data.db")  # connecting to db
-    db_sess = db_session.create_session()
-
-    app = Flask(__name__)
-    api = Api(app)
-
-    api.add_resource(RecipeResource, '/api/recipes/<int:recipe_id>')
-    api.add_resource(RecipeListResource, '/api/recipes')
-    api.add_resource(SearchableRecipeListResource, '/api/recipes/search')
-    api.add_resource(RecipeImageResource, '/api/recipes/photo/<int:recipe_id>')
-
-    api.add_resource(ProductResource, '/api/products/<int:product_id>')
-    api.add_resource(ProductListResource, '/api/products')
-    api.add_resource(ProductsBondedListResource, '/api/products/for_recipe/<int:recipe_id>')
-
-    app.run()
-
-    '''
-    for el in products_for_recipe_search(input()):
-        print(el)
-    '''
-    '''
-    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first())
-    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first().get_json_data())
-    '''
-
-    product_prices_sum = 0  # stores sum of ingredients prices
-    for found_recipe in recipe_tags_search(input()):  # for all matching recipes
-        print(found_recipe.ingredients)  # prints ingredients
-        for ingredient in found_recipe.ingredients.split(';'):  # iterating product ingredients
-            print(ingredient.split(' - ')[0])
-            products_found = products_for_recipe_search(ingredient.split(' - ')[0])  # getting list of matching products
-            try:
-                product_prices_sum += int(
-                    products_found[0].price)  # if found adds price of first element to sum variable
-            except IndexError:
-                pass  # of sequence is empty does nothing
-    print(f'Итого: {product_prices_sum}')  # printing sum of found products
+@app.route('/')
+@app.route('/index')
+def index():
+    return "index page (just a place holder)"
 
 
 def get_all_word_forms(word):
@@ -425,6 +395,47 @@ def get_products_bonded_with_recipe(recipe):
 
     print(bonded_products)
     return bonded_products
+
+
+def main():
+    db_session.global_init("db/recipes_data.db")  # connecting to db
+    db_sess = db_session.create_session()
+
+    api = Api(app)
+
+    api.add_resource(RecipeResource, '/api/recipes/<int:recipe_id>')
+    api.add_resource(RecipeListResource, '/api/recipes')
+    api.add_resource(SearchableRecipeListResource, '/api/recipes/search')
+    api.add_resource(RecipeImageResource, '/api/recipes/photo/<int:recipe_id>')
+
+    api.add_resource(ProductResource, '/api/products/<int:product_id>')
+    api.add_resource(ProductListResource, '/api/products')
+    api.add_resource(ProductsBondedListResource, '/api/products/for_recipe/<int:recipe_id>')
+
+    app.run()
+
+    '''
+    for el in products_for_recipe_search(input()):
+        print(el)
+    '''
+    '''
+    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first())
+    print(db_sess.query(Product).filter(Product.tags.like('%' + 'мука' + '%')).first().get_json_data())
+    '''
+    '''
+    product_prices_sum = 0  # stores sum of ingredients prices
+    for found_recipe in recipe_tags_search(input()):  # for all matching recipes
+        print(found_recipe.ingredients)  # prints ingredients
+        for ingredient in found_recipe.ingredients.split(';'):  # iterating product ingredients
+            print(ingredient.split(' - ')[0])
+            products_found = products_for_recipe_search(ingredient.split(' - ')[0])  # getting list of matching products
+            try:
+                product_prices_sum += int(
+                    products_found[0].price)  # if found adds price of first element to sum variable
+            except IndexError:
+                pass  # of sequence is empty does nothing
+    print(f'Итого: {product_prices_sum}')  # printing sum of found products
+    '''
 
 
 if __name__ == '__main__':
