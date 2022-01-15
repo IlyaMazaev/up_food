@@ -412,7 +412,8 @@ def main():
     api.add_resource(ProductListResource, '/api/products')
     api.add_resource(ProductsBondedListResource, '/api/products/for_recipe/<int:recipe_id>')
 
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
 
     '''
     for el in products_for_recipe_search(input()):
