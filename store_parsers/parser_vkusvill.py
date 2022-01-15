@@ -7,7 +7,7 @@ from tqdm.auto import tqdm
 
 from data import db_session  # db engine
 
-from main_recipes_api import add_new_product
+from main import add_new_product
 
 
 def setDriver():  # Запуск драйвера

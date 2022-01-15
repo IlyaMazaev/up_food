@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from data import db_session  # db engine
-from main_recipes_api import add_new_recipe
+from main import add_new_recipe
 
 
 def main():
