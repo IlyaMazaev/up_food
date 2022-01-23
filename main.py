@@ -27,6 +27,7 @@ recipe_tags_search_parser.add_argument('search_request', required=False)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '9CB2FA9ED59693626BC2'
+api = Api(app, prefix='/api')
 
 
 class RecipeResource(Resource):
@@ -401,16 +402,14 @@ def main():
     db_session.global_init("db/recipes_data.db")  # connecting to db
     db_sess = db_session.create_session()
 
-    api = Api(app)
+    api.add_resource(RecipeResource, '/recipes/<int:recipe_id>')
+    api.add_resource(RecipeListResource, '/recipes')
+    api.add_resource(SearchableRecipeListResource, '/recipes/search')
+    api.add_resource(RecipeImageResource, '/recipes/photo/<int:recipe_id>')
 
-    api.add_resource(RecipeResource, '/api/recipes/<int:recipe_id>')
-    api.add_resource(RecipeListResource, '/api/recipes')
-    api.add_resource(SearchableRecipeListResource, '/api/recipes/search')
-    api.add_resource(RecipeImageResource, '/api/recipes/photo/<int:recipe_id>')
-
-    api.add_resource(ProductResource, '/api/products/<int:product_id>')
-    api.add_resource(ProductListResource, '/api/products')
-    api.add_resource(ProductsBondedListResource, '/api/products/for_recipe/<int:recipe_id>')
+    api.add_resource(ProductResource, '/products/<int:product_id>')
+    api.add_resource(ProductListResource, '/products')
+    api.add_resource(ProductsBondedListResource, '/products/for_recipe/<int:recipe_id>')
 
     app.run()
 
