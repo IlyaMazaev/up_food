@@ -4,6 +4,7 @@ import os
 import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
 from flask import Flask, jsonify, send_file
+from flask_httpauth import HTTPBasicAuth
 from flask_restful import reqparse, abort, Api, Resource
 
 from data import db_session  # db engine
@@ -27,6 +28,17 @@ recipe_tags_search_parser.add_argument('search_request', required=False)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '9CB2FA9ED59693626BC2'
+api = Api(app, prefix='/api')
+auth = HTTPBasicAuth()
+
+USER_DATA = {'api_user': 'super_secret_password'}
+
+
+@auth.verify_password
+def verify(username, password):
+    if not (username and password):
+        return False
+    return USER_DATA[username] == password
 
 
 class RecipeResource(Resource):
@@ -35,6 +47,7 @@ class RecipeResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def abort_if_not_found(recipe_id):
         """
         aborts 404 error if it can't fond recipe with given id
@@ -46,6 +59,7 @@ class RecipeResource(Resource):
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
+    @auth.login_required
     def get(self, recipe_id):
         """
         sends data in json of one recipe by its id given as param
@@ -56,6 +70,7 @@ class RecipeResource(Resource):
         recipe = session.query(Recipe).get(recipe_id)
         return jsonify({'recipe': recipe.to_dict()})
 
+    @auth.login_required
     def delete(self, recipe_id):
         """
         deletes recipe with id given as param
@@ -75,6 +90,7 @@ class RecipeImageResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def abort_if_not_found(recipe_id):
         """
         aborts 404 error if it can't fond recipe with given id
@@ -86,6 +102,7 @@ class RecipeImageResource(Resource):
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
+    @auth.login_required
     def get(self, recipe_id):
         """
         sends image of recipe with id given as param
@@ -104,6 +121,7 @@ class RecipeListResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def get():
         """
         sends list with all recipes in db
@@ -113,6 +131,7 @@ class RecipeListResource(Resource):
         return jsonify({'recipes': [item.to_dict() for item in recipes]})
 
     @staticmethod
+    @auth.login_required
     def post():
         """
         adds new recipe with args given as parameters of web post request
@@ -136,6 +155,7 @@ class SearchableRecipeListResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def get():
         """
         gets search request as param of get post request
@@ -157,6 +177,7 @@ class ProductResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def abort_if_not_found(product_id):
         """
         aborts 404 error if it can't fond recipe with given id
@@ -168,6 +189,7 @@ class ProductResource(Resource):
         if not product:
             abort(404, message=f"Recipe {product_id} not found")
 
+    @auth.login_required
     def get(self, product_id):
         """
         sends data in json of one product by its id given as param
@@ -186,6 +208,7 @@ class ProductListResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def get():
         """
         sends list with all recipes in db
@@ -201,6 +224,7 @@ class ProductsBondedListResource(Resource):
     """
 
     @staticmethod
+    @auth.login_required
     def abort_if_not_found(recipe_id):
         """
         aborts 404 error if it can't fond recipe with given id
@@ -211,6 +235,7 @@ class ProductsBondedListResource(Resource):
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
+    @auth.login_required
     def get(self, recipe_id):
         """
         returns all products bonded to a recipe in json format
@@ -401,16 +426,14 @@ def main():
     db_session.global_init("db/recipes_data.db")  # connecting to db
     db_sess = db_session.create_session()
 
-    api = Api(app)
+    api.add_resource(RecipeResource, '/recipes/<int:recipe_id>')
+    api.add_resource(RecipeListResource, '/recipes')
+    api.add_resource(SearchableRecipeListResource, '/recipes/search')
+    api.add_resource(RecipeImageResource, '/recipes/photo/<int:recipe_id>')
 
-    api.add_resource(RecipeResource, '/api/recipes/<int:recipe_id>')
-    api.add_resource(RecipeListResource, '/api/recipes')
-    api.add_resource(SearchableRecipeListResource, '/api/recipes/search')
-    api.add_resource(RecipeImageResource, '/api/recipes/photo/<int:recipe_id>')
-
-    api.add_resource(ProductResource, '/api/products/<int:product_id>')
-    api.add_resource(ProductListResource, '/api/products')
-    api.add_resource(ProductsBondedListResource, '/api/products/for_recipe/<int:recipe_id>')
+    api.add_resource(ProductResource, '/products/<int:product_id>')
+    api.add_resource(ProductListResource, '/products')
+    api.add_resource(ProductsBondedListResource, '/products/for_recipe/<int:recipe_id>')
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
