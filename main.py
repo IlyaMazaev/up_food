@@ -8,6 +8,7 @@ from flask_httpauth import HTTPBasicAuth
 from flask_restful import reqparse, abort, Api, Resource
 
 from data import db_session  # db engine
+from data.nutrition_programs import NutritionProgram  # orm NutritionProgram class
 from data.products import Product  # orm Product class
 from data.recipes import Recipe  # orm Recipe class
 
@@ -25,6 +26,19 @@ recipe_post_parser.add_argument('photo_address', required=False)
 # arg parser for recipe searching
 recipe_tags_search_parser = reqparse.RequestParser()
 recipe_tags_search_parser.add_argument('search_request', required=False)
+
+# arg parser for adding new nutrition programs
+n_program_post_parser = reqparse.RequestParser()
+n_program_post_parser.add_argument('name', required=True)
+n_program_post_parser.add_argument('meals_data_json', required=True)
+n_program_post_parser.add_argument('type', required=True)
+n_program_post_parser.add_argument('photo_address', required=False)
+
+
+# arg parser for n programs searching
+n_program_tags_search_parser = reqparse.RequestParser()
+n_program_tags_search_parser.add_argument('search_request', required=False)
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '9CB2FA9ED59693626BC2'
@@ -248,6 +262,140 @@ class ProductsBondedListResource(Resource):
         return jsonify({'products': get_products_bonded_with_recipe(recipe)})
 
 
+
+
+class NutritionProgramResource(Resource):
+    """
+    Resource class for REST api
+    """
+
+    @staticmethod
+    @auth.login_required
+    def abort_if_not_found(nutrition_program_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        func used in get and delete
+        :param nutrition_program_id:
+        """
+        session = db_session.create_session()
+        recipe = session.query(NutritionProgram).get(nutrition_program_id)
+        if not recipe:
+            abort(404, message=f"NutritionProgram {nutrition_program_id} not found")
+
+    @auth.login_required
+    def get(self, nutrition_program_id):
+        """
+        sends data in json of one recipe by its id given as param
+        :param nutrition_program_id:
+        """
+        self.abort_if_not_found(nutrition_program_id)
+        session = db_session.create_session()
+        n_program = session.query(NutritionProgram).get(nutrition_program_id)
+        return jsonify({'nutrition_program': n_program.to_dict()})
+
+    @auth.login_required
+    def delete(self, nutrition_program_id):
+        """
+        deletes recipe with id given as param
+        :param nutrition_program_id:
+        """
+        self.abort_if_not_found(nutrition_program_id)
+        session = db_session.create_session()
+        n_program = session.query(NutritionProgram).get(nutrition_program_id)
+        session.delete(n_program)
+        session.commit()
+        return jsonify({'success': 'OK'})
+
+
+class NutritionProgramImageResource(Resource):
+    """
+    REST resource class needed to work with images of nutrition programs
+    """
+
+    @staticmethod
+    @auth.login_required
+    def abort_if_not_found(nutrition_program_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        func used in get and delete
+        :param nutrition_program_id:
+        """
+        session = db_session.create_session()
+        recipe = session.query(NutritionProgram).get(nutrition_program_id)
+        if not recipe:
+            abort(404, message=f"NutritionProgram {nutrition_program_id} not found")
+
+    @auth.login_required
+    def get(self, nutrition_program_id):
+        """
+        sends image of recipe with id given as param
+        :param nutrition_program_id:
+        """
+        self.abort_if_not_found(nutrition_program_id)
+        session = db_session.create_session()
+        n_program = session.query(NutritionProgram).get(nutrition_program_id)
+        return send_file(n_program.photo_address, mimetype='image/jpeg')
+
+
+class NutritionProgramListResource(Resource):
+    """
+    Resource class for REST api
+    works with multiple nutrition programs (lists)
+    """
+
+    @staticmethod
+    @auth.login_required
+    def get():
+        """
+        sends list with all nutrition programs in db
+        """
+        session = db_session.create_session()
+        n_programs = session.query(Recipe).all()
+        return jsonify({'nutrition_programs': [item.to_dict() for item in n_programs]})
+
+    @staticmethod
+    @auth.login_required
+    def post():
+        """
+        adds new nutrition program with args given as parameters of web post request
+        """
+        args = n_program_post_parser.parse_args()
+        add_new_recipe(name=args['name'],
+                       ingredients=args['meals_data_json'],
+                       how_to_cook=args['type'],
+                       photo_address=args['photo_address'])
+
+        return jsonify({'success': 'OK'})
+
+
+class SearchableNutritionProgramListResource(Resource):
+    """
+    part of REST api, this one is for searching
+    """
+
+    @staticmethod
+    @auth.login_required
+    def get():
+        """
+        gets search request as param of get post request
+        it's basically recipe_tags_search() function wrapped in REST api format
+        sends back all found recipes as jsons
+        """
+        args = n_program_tags_search_parser.parse_args()
+
+        # session = db_session.create_session()
+        print(args['search_request'])
+        n_programs = nutrition_program_tags_search(args['search_request'])
+
+        return jsonify({'nutrition_programs': [item.to_dict() for item in n_programs]})
+
+
+
+
+
+
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -327,6 +475,40 @@ def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions,
         recipe.set_photo_address(photo_address)
         db_sess.commit()
         print(f'added recipe {name}')
+
+
+def add_new_nutrition_program(name, meals_data_json, type, photo_address=''):
+    """adds new nutrition program to the db
+    needs program name, and its data in format:
+    {
+    'days':
+        [
+            {'meals': [
+                {'name': 'program_name', 'time': 'time_of_this_meal', 'recipes': ['id_1', 'id_2']},
+                {'name': 'program_name2', 'time': 'time_of_this_meal2', 'recipes': ['id_3', 'id_4']}
+            ]}
+        ]
+}
+
+    tags are being created using create_tags_for_line(name + type)
+    """
+    db_sess = db_session.create_session()
+    # if there are a recipe with the name like that
+    if db_sess.query(Recipe).filter(Recipe.name == name).first():
+        print(f'this recipe already exists({name})')
+
+    else:
+        # creating NutritionProgram class object
+        n_program = NutritionProgram(name=name,
+                                     meals_data_json=meals_data_json,
+                                     tags=create_tags_for_line(name + type),
+                                     type=type)
+
+        db_sess.add(n_program)
+        db_sess.commit()
+        n_program.set_photo_address(photo_address)
+        db_sess.commit()
+        print(f'added nutrition program {name}')
 
 
 def add_new_product(name, store, price, type, photo_address=''):
@@ -434,6 +616,11 @@ def main():
     api.add_resource(ProductResource, '/products/<int:product_id>')
     api.add_resource(ProductListResource, '/products')
     api.add_resource(ProductsBondedListResource, '/products/for_recipe/<int:recipe_id>')
+
+    api.add_resource(NutritionProgramResource, '/nutrition_programs/<int:nutrition_program_id>')
+    api.add_resource(NutritionProgramListResource, '/nutrition_programs')
+    api.add_resource(SearchableNutritionProgramListResource, '/nutrition_programs/search')
+    api.add_resource(NutritionProgramImageResource, '/nutrition_programs/photo/<int:nutrition_program_id>')
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)

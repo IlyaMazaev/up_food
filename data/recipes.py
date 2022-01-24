@@ -3,7 +3,6 @@ import datetime
 import sqlalchemy
 from sqlalchemy_serializer import SerializerMixin
 
-
 from data.db_session import SqlAlchemyBase
 
 
@@ -52,4 +51,3 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
                 'creator_info': self.creator_info,
                 'some_additional_info': self.some_additional_info
                 }
-
