@@ -1,18 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import User
+from PIL import Image
+
 
 
 # Create your models here.
 
-class Recipe(models.Model):
-    name = models.CharField(max_length=100)
-    products = models.CharField(max_length=100)
-    how_to_cook = models.CharField(max_length=100)
-    tags = models.CharField(max_length=100)
-    photo = models.CharField(max_length=100)
-    portions = models.CharField(max_length=100)
-    time = models.CharField(max_length=100)
-    types = models.CharField(max_length=100)
-    # some additional fields, currently not used
-    date_time_added = models.CharField(max_length=100)
-    creator_info = models.CharField(max_length=100)
-    some_additional_info = models.CharField(max_length=100)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    image = models.ImageField(default='default.jpg', upload_to='profile_img')
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        img = Image.open(self.image.path)
+        if img.height > 300 or img.width > 300:
+            output_size = (300, 300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)

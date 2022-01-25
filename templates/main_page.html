@@ -16,13 +16,13 @@
         <div class='table_recipes'>
             <div class='recipe'>
                 <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/'>
+                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.name }}'>
                         <img alt="Name" class='image' src={% static recipe.photo_address %}>
                     </a>
                 </div>
                 <div class=''>
                     <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ q }}' class='text'>
+                        <a href='/recipe/?q={{ recipe.name }}' class='text'>
                             <h4 title class="text">
                                 {{ recipe.name }}
                             </h4>

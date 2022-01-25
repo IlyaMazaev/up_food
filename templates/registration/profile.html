@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm">
+            <div class="card">
+                <h3 class="card-header">Профиль</h3>
+                <div class="card-body">
+                    <img src="{{ user.profile.image.url }}">
+                    <p>Username: {{ user.username }}</p>
+                    <p>Email: {{ user.email }}</p>
+                    <hr>
+                    <h5>Изменить данные</h5>
+                    <hr>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ u_form|crispy }}
+                        {{ p_form|crispy }}
+                        <input type="submit" value="Сохранить изменения">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
