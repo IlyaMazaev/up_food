@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
+{% load mathfilters %}
 {% load static %}
+{% block js %}
+    <script>
+            document.getElementById("cost").innerHTML = "WIP"
+    </script>
+{% endblock %}
 {% block content %}
     <main>
         <div class="main_class">
@@ -11,14 +17,18 @@
                     <h4>{{ recipe.name }}</h4>
                 </div>
             </div>
-            <div class="products">
-            {% for i in ing %}
-                <select>
-                    {% for k in prod_dict.i %}
-                    <option>{{ k.name }}</option>
+            <a class="products">
+            <form action='add_cart' method='GET'>
+            {% for key, value in prod_dict.items %}
+                <select name="dropdown">
+                    {% for i in value %}
+                    <option>{{ i.name }} {{ i.price }}</option>
                     {% endfor %}
                 </select>
             {% endfor %}
+                <button type='submit'>Добавить</button>
+            </form>
+            </a>
             </div>
             <div class="pagedown_body">
 

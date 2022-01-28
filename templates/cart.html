@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <h2>Корзина:</h2>
+    {% for i in prod %}
+    <div class="recipe_ing">
+        <span title="" class="rec_ing">
+            <span itemprop="recipeIngredient">{{ i }}</span>
+        </span>
+    </div>
+    {% endfor %}
+    <h4>Итоговая сумма: {{ price }}руб</h4>
+    <input type="submit" value="Купить">
+{% endblock %}
