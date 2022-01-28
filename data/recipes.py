@@ -15,7 +15,8 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
     ingredients = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     how_to_cook = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     tags = sqlalchemy.Column(sqlalchemy.String, nullable=False)
-    photo_address = sqlalchemy.Column(sqlalchemy.String, nullable=True, default=f'static/img/file_error.jpg')
+    photo_address = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='static/img/file_error.jpg')
+    link_to_photo_api = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='https://recipes-db-api.herokuapp.com/api/recipes/photo/error')
     portions = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     time = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     types = sqlalchemy.Column(sqlalchemy.String, nullable=False)
@@ -33,6 +34,8 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
             self.photo_address = address
         else:
             self.photo_address = f'static/img/file_{str(self.id)}.jpg'
+
+        self.link_to_photo_api = f'https://recipes-db-api.herokuapp.com/api/recipes/photo/{str(self.id)}'
 
     def __repr__(self):
         return f'Recipe({str(self.name)})'
