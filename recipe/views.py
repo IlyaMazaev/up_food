@@ -1,10 +1,12 @@
-from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib import messages
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
 
 from database_work.main_recipes_api import recipe_tags_search, get_products_bonded_with_recipe
+from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from recipe.models import Profile
 
+alph = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
 
 
 # Create your views here.
@@ -31,9 +33,11 @@ def recipe(request):
     rec = recipe_tags_search(q)[0].get_json_data()
     context = dict(
         recipe=rec,
-        ing = rec.get('ingredients').split(';')
+        ing=rec.get('ingredients').split(';'),
+        q=q
     )
     return render(request, 'recipe_template.html', context)
+
 
 def register(request):
     context = dict()
@@ -49,6 +53,7 @@ def register(request):
     context['form'] = form
     return render(request, 'registration/register.html', context)
 
+
 def order(request):
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
@@ -60,10 +65,33 @@ def order(request):
         recipe=rec,
         ing=ingredients_list,
         products=products_list,
-        prod_dict=products_dict
+        prod_dict=products_dict,
+        q=q
 
     )
     return render(request, "order_form.html", context)
+
+
+def add_cart(request):
+    cart = list()
+    ans = list()
+    ans = request.GET.getlist('dropdown')
+    cart = Profile.objects.get(id=request.user.id)
+    for i in ans:
+        cart.cart += i + ';'
+    cart.save()
+    return redirect('/')
+
+
+def add_fav(request):
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+    current_user = request.user
+    fav = Profile.objects.get(id=current_user.id)
+    fav.fav += q + ';'
+    fav.save()
+    return redirect('/')
+
 
 @login_required
 def profile(request):
@@ -86,6 +114,40 @@ def profile(request):
     return render(request, 'registration/profile.html', context)
 
 
+def favorite(request):
+    rec = list()
+    current_user = request.user
+    fav = Profile.objects.get(id=current_user.id)
+    allfav = fav.fav.split(';')
+    fav.save()
+    for i in allfav:
+        if len(i) >= 1:
+            rec.append(recipe_tags_search(i.strip(';'))[0].get_json_data())
+    context = dict(
+        fav=rec
+    )
+    return render(request, 'favorite.html', context)
 
 
+def cart(request):
+    price = 0.0
+    c = 0
+    cart = Profile.objects.get(id=request.user.id)
+    all_cart = cart.cart.split(';')
+    cart.save()
+    for i in all_cart:
+        price_list = i.split(' ')
+        for j in price_list:
+            for k in j.split(','):
+                if k.isdigit() == True:
+                    c += 1
+                if c == len(j.split(',')):
+                    price += float(j.replace(',','.'))
+                    c = 0
+    price = '{:.2f}'.format(price)
 
+    context = dict(
+        price=price,
+        prod = all_cart,
+    )
+    return render(request, 'cart.html', context)

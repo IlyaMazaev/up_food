@@ -20,6 +20,9 @@
                 <div class="additional_information">
                     <span title class="text">
                         <span itemprop="portion_count">
+                            <form action="actionUrl" method="GET">
+                                <button type="submit" value="{{ q }}" name="q">В избранное</button>
+                            </form>
                             <span>Порций: {{ recipe.portions }}</span>
                             <span class="clock-icon">Время: {{ recipe.time }}</span>
                         </span>
