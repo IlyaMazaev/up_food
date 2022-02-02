@@ -15,13 +15,15 @@
             <a class="products">
             <form action='add_cart' method='GET'>
             {% for key, value in prod_dict.products.items %}
-                <select name="dropdown">
-                    {% for i in value %}
-                    <option>{{ i.name }} {{ i.price }}</option>
-                    {% endfor %}
-                </select>
+                <div>
+                    <select name="dropdown" class="form-select">
+                        {% for i in value %}
+                        <option>{{ i.name }} {{ i.price }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             {% endfor %}
-                <button type='submit'>Добавить</button>
+                <button type='submit' class="btn btn-default">Добавить</button>
             </form>
             </a>
             </div>
