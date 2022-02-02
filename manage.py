@@ -3,12 +3,10 @@
 import os
 import sys
 
-from database_work.data import db_session
 
 
 def main():
     """Run administrative tasks."""
-    db_session.global_init("database_work/db/recipes_data.db")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'upfood_site.settings')
     try:
         from django.core.management import execute_from_command_line

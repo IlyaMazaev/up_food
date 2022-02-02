@@ -5,11 +5,11 @@
         <div class="main_class">
             <div class="title_body">
                 <div class="image_class">
-                    <img class="main_image" src={% static recipe.photo_address %}>
+                    <img class="main_image" src={{ recipe.recipe.link_to_photo_api }}>
                 </div>
                 <div class="main_title_class">
                     <span itemprop="name">
-                        <h1 class="main_title_h1">{{ recipe.name }}</h1>
+                        <h1 class="main_title_h1">{{ recipe.recipe.name }}</h1>
                     </span>
                 </div>
                 <form action="actionUrl" method="GET">
@@ -17,15 +17,19 @@
                 </form>
                 <div class="text_type">
                     <span class="text">
-                        <span class="text">{{ recipe.types }}</span>
+                        <span class="text">{{ recipe.recipe.types }}</span>
                     </span>
                 </div>
                 <div class="additional_information">
                     <span title class="text">
                         <span itemprop="portion_count">
-
-                            <span>Порций: {{ recipe.portions }}</span>
-                            <span class="clock-icon">Время: {{ recipe.time }}</span>
+                            {% if log is True %}
+                            <form action="actionUrl" method="GET">
+                                <button type="submit" value="{{ q }}" disabled="{{ disable }}" name="q">В избранное</button>
+                            </form>
+                            {% endif %}
+                            <span>Порций: {{ recipe.recipe.portions }}</span>
+                            <span class="clock-icon">Время: {{ recipe.recipe.time }}</span>
                         </span>
                     </span>
                 </div>
@@ -46,7 +50,7 @@
                         {% endfor %}
 
                     </div>
-                    <button class="btn btn-default" onclick='location.href="/order/?q={{ recipe.name }}"'>Купить продукты</button>
+                    <button class="btn btn-default" onclick='location.href="/order/?q={{ recipe.recipe.id }}"'>Купить продукты</button>
                     <p> </p>
                 </div>
                 <div class="how_to_class">
@@ -55,7 +59,7 @@
                     </div>
                     <div class="container rounded bg-recipe-page mt-4 pt-1">
                         <span itemprop="text">
-                            {{ recipe.how_to_cook }}
+                            {{ recipe.recipe.how_to_cook }}
                         </span>
                     </div>
                 </div>
