@@ -37,7 +37,7 @@ def recipe(request):
     dis_button_fav = False
     if logged == True:
         current_user = request.user
-        fav = Profile.objects.get(id=current_user.id)
+        fav = Profile.objects.get(user_id=current_user.id)
         allfav = fav.fav.split(';')
         if q in allfav:
             dis_button_fav = True
@@ -87,7 +87,7 @@ def order(request):
 
 def add_cart(request):
     ans = request.GET.getlist('dropdown')
-    cart = Profile.objects.get(id=request.user.id)
+    cart = Profile.objects.get(user_id=request.user.id)
     for i in ans:
         cart.cart += i + ';'
     cart.save()
@@ -98,7 +98,7 @@ def add_fav(request):
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
     current_user = request.user
-    fav = Profile.objects.get(id=current_user.id)
+    fav = Profile.objects.get(user_id=current_user.id)
     fav.fav += q + ';'
     fav.save()
     return redirect('/')
@@ -114,7 +114,7 @@ def profile(request):
             p_form.save()
             username = u_form.cleaned_data.get('username')
             messages.success(request, f'Изменения профиля сохранены для {username}')
-            return redirect('/profile/')
+            return redirect('/accounts/profile/')
     else:
         u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdateForm(instance=request.user.profile)
@@ -128,7 +128,7 @@ def profile(request):
 def favorite(request):
     rec = list()
     current_user = request.user
-    fav = Profile.objects.get(id=current_user.id)
+    fav = Profile.objects.get(user_id=current_user.id)
     allfav = fav.fav.split(';')
     fav.save()
     for i in allfav:
@@ -144,7 +144,7 @@ def favorite(request):
 def cart(request):
     price = 0.0
     c = 0
-    cart = Profile.objects.get(id=request.user.id)
+    cart = Profile.objects.get(user_id=request.user.id)
     all_cart = cart.cart.split(';')
     cart.save()
     for i in all_cart:

@@ -47,8 +47,10 @@
                         {% endfor %}
 
                     </div>
+                {% if log is True %}
                     <button class="btn btn-default" onclick='location.href="/order/?q={{ recipe.recipe.id }}"'>Купить продукты</button>
                     <p> </p>
+                {% endif %}
                 </div>
                 <div class="how_to_class">
                     <div class="how_to_title">
