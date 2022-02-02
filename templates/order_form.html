@@ -1,25 +1,20 @@
 {% extends 'base.html' %}
 {% load mathfilters %}
 {% load static %}
-{% block js %}
-    <script>
-            document.getElementById("cost").innerHTML = "WIP"
-    </script>
-{% endblock %}
 {% block content %}
     <main>
         <div class="main_class">
             <div class="title_body">
                 <div class="image">
-                    <img src={% static recipe.photo_address %}>
+                    <img src={{ recipe.recipe.link_to_photo_api }}>
                 </div>
                 <div class="title">
-                    <h4>{{ recipe.name }}</h4>
+                    <h4>{{ recipe.recipe.name }}</h4>
                 </div>
             </div>
             <a class="products">
             <form action='add_cart' method='GET'>
-            {% for key, value in prod_dict.items %}
+            {% for key, value in prod_dict.products.items %}
                 <select name="dropdown">
                     {% for i in value %}
                     <option>{{ i.name }} {{ i.price }}</option>

@@ -7,6 +7,15 @@ from .models import Profile
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+
+        try:
+            match = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+        raise forms.ValidationError('Эта почта уже используется в другом аккаунте. Если вы забыли пароль, воспользуйтесь сбросом пароля')
+
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']

@@ -14,17 +14,18 @@
             <input type="text" class="form-control" placeholder="Поиск..." id="search_box" name="q">
         </form>
         <div class='table_recipes'>
+            {% for i in recipe.recipes %}
             <div class='recipe'>
                 <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.name }}'>
-                        <img alt="Name" class='image' src={% static recipe.photo_address %}>
+                    <a class='recipe_image_link' href='/recipe/?q={{ i.id }}'>
+                        <img alt="Name" class='image' width="150" height="100" src={{ i.link_to_photo_api }}>
                     </a>
                 </div>
                 <div class=''>
                     <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ recipe.name }}' class='text'>
+                        <a href='/recipe/?q={{ i.id }}' class='text'>
                             <h4 title class="text">
-                                {{ recipe.name }}
+                                {{ i.name }}
                             </h4>
                         </a>
                     </div>
@@ -32,5 +33,7 @@
                 </div>
             </div>
         </div>
+                <hr>
+    {% endfor %}
     </div>
 {% endblock %}

@@ -1,24 +1,26 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from requests import get
+from requests.auth import HTTPBasicAuth
 
-from database_work.main_recipes_api import recipe_tags_search, get_products_bonded_with_recipe
 from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from recipe.models import Profile
 
-alph = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
+basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
 
 # Create your views here.
 
 def main_page(request):
-    q = ' '
+    q = ''
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
-    try:
-        rec = recipe_tags_search(q)[0].get_json_data()
-    except IndexError:
-        rec = {'name': 'Ничего не найдено'}
+    if q != '':
+        params_search = {'search_request': q}
+        rec = get('https://recipes-db-api.herokuapp.com/api/recipes/search', auth=basic, params=params_search).json()
+    else:
+        rec = get('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic).json()
     context = dict(
         recipe=rec,
         q=q
@@ -30,11 +32,21 @@ def recipe(request):
     q = ''
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
-    rec = recipe_tags_search(q)[0].get_json_data()
+    rec = get('https://recipes-db-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
+    logged = request.user.is_authenticated
+    dis_button_fav = False
+    if logged == True:
+        current_user = request.user
+        fav = Profile.objects.get(id=current_user.id)
+        allfav = fav.fav.split(';')
+        if q in allfav:
+            dis_button_fav = True
     context = dict(
         recipe=rec,
-        ing=rec.get('ingredients').split(';'),
-        q=q
+        ing=rec.get('recipe').get('ingredients').split(';'),
+        q=q,
+        log=logged,
+        disable=dis_button_fav,
     )
     return render(request, 'recipe_template.html', context)
 
@@ -57,10 +69,11 @@ def register(request):
 def order(request):
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
-    rec = recipe_tags_search(q)[0].get_json_data()
-    products_dict = get_products_bonded_with_recipe(recipe_tags_search(q)[0])
-    products_list = list(products_dict.values())
-    ingredients_list = list(products_dict.keys())
+    rec = get('https://recipes-db-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
+    products_dict = get('https://recipes-db-api.herokuapp.com/api/products/for_recipe/' + q,
+                        auth=basic).json()
+    products_list = list(products_dict.get('products').values())
+    ingredients_list = list(products_dict.get('products').keys())
     context = dict(
         recipe=rec,
         ing=ingredients_list,
@@ -73,8 +86,6 @@ def order(request):
 
 
 def add_cart(request):
-    cart = list()
-    ans = list()
     ans = request.GET.getlist('dropdown')
     cart = Profile.objects.get(id=request.user.id)
     for i in ans:
@@ -122,7 +133,8 @@ def favorite(request):
     fav.save()
     for i in allfav:
         if len(i) >= 1:
-            rec.append(recipe_tags_search(i.strip(';'))[0].get_json_data())
+            params_search = i.strip(';')
+            rec.append(get('https://recipes-db-api.herokuapp.com/api/recipes/' + params_search, auth=basic).json())
     context = dict(
         fav=rec
     )
@@ -138,16 +150,17 @@ def cart(request):
     for i in all_cart:
         price_list = i.split(' ')
         for j in price_list:
-            for k in j.split(','):
-                if k.isdigit() == True:
-                    c += 1
-                if c == len(j.split(',')):
-                    price += float(j.replace(',','.'))
-                    c = 0
+            if ',' in j:
+                for k in j.split(','):
+                    if k.isdigit() == True:
+                        c += 1
+                    if c == len(j.split(',')):
+                        price += float(j.replace(',', '.'))
+                        c = 0
     price = '{:.2f}'.format(price)
 
     context = dict(
         price=price,
-        prod = all_cart,
+        prod=all_cart,
     )
     return render(request, 'cart.html', context)
