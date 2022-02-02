@@ -7,10 +7,17 @@ from PIL import Image
 # Create your models here.
 
 class Profile(models.Model):
+    GENDER_CHOICES = (
+        ('M', 'Мужчина'),
+        ('F', 'Женщина'),
+        ('NS', 'Не указано')
+    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_img')
     fav = models.CharField(max_length=300, blank=True)
     cart = models.CharField(max_length=1000, blank=True)
+    gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
+
 
     def __str__(self):
         return f'{self.user.username} Profile'
