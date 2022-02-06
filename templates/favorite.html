@@ -2,25 +2,53 @@
 {% load static %}
 {% block content %}
     <h2>Ваши избранные рецепты:</h2>
-    <div class='table_recipes'>
-    {% for recipe in fav %}
-            <div class='recipe'>
+<div class="container">
+      <div class="row">
+      {% for recipe in fav %}
+      {%  if forloop.counter|divisibleby:3 %}
+        <div class="container rounded bg-recipe-card mt-4 pt-1">
                 <div class='recipe_image_card'>
                     <a class='recipe_image_link' href='/recipe/?q={{ recipe.recipe.id }}'>
-                        <img alt="Name" class='image' src={{ recipe.recipe.link_to_photo_api }}>
+                        <img alt="Name" class='image' width="300" height="200" src={{ recipe.recipe.link_to_photo_api }}>
                     </a>
                 </div>
-                <div class=''>
+                <div class="">
                     <div class='recipe_information_name'>
                         <a href='/recipe/?q={{ recipe.recipe.id }}' class='text'>
                             <h4 title class="text">
                                 {{ recipe.recipe.name }}
                             </h4>
+                            <p></p>
                         </a>
                     </div>
                     <div class='recipe_information'></div>
                 </div>
             </div>
-        </div>
-    {% endfor %}
+      </div>
+      {% if not forloop.last %}
+      <div class="row">
+      {% endif %}
+      {% else %}
+        <div class="container rounded bg-recipe-card mt-4 pt-1">
+                <div class='recipe_image_card'>
+                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.recipe.id }}'>
+                        <img alt="Name" class='image' width="300" height="200" src={{ recipe.recipe.link_to_photo_api }}>
+                    </a>
+                </div>
+                <div class="">
+                    <div class='recipe_information_name'>
+                        <a href='/recipe/?q={{ recipe.recipe.id }}' class='text'>
+                            <h4 title class="text">
+                                {{ recipe.recipe.name }}
+                            </h4>
+                            <p></p>
+                        </a>
+                    </div>
+                    <div class='recipe_information'></div>
+                </div>
+            </div>
+      {% endif %}
+      {% endfor %}
+      </div>
+</div>
 {% endblock %}
