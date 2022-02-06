@@ -13,20 +13,23 @@
         <form method="GET" class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Поиск..." id="search_box" name="q">
         </form>
-        <div class='table_recipes'>
-            {% for i in recipe.recipes %}
-            <div class='recipe'>
-            <div class="container rounded bg-recipe-card mt-4 pt-1">
+    </div>
+
+  <div class="container">
+      <div class="row">
+      {% for recipe in recipe.recipes %}
+      {%  if forloop.counter|divisibleby:3 %}
+        <div class="container rounded bg-recipe-card mt-4 pt-1">
                 <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/?q={{ i.id }}'>
-                        <img alt="Name" class='image' width="150" height="100" src={{ i.link_to_photo_api }}>
+                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
+                        <img alt="Name" class='image' width="300" height="200" src={{ recipe.link_to_photo_api }}>
                     </a>
                 </div>
                 <div class="">
                     <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ i.id }}' class='text'>
+                        <a href='/recipe/?q={{ recipe.id }}' class='text'>
                             <h4 title class="text">
-                                {{ i.name }}
+                                {{ recipe.name }}
                             </h4>
                             <p></p>
                         </a>
@@ -34,8 +37,36 @@
                     <div class='recipe_information'></div>
                 </div>
             </div>
-        </div>
-                <hr>
-    {% endfor %}
-    </div>
+      </div>
+      {% if not forloop.last %}
+      <div class="row">
+      {% endif %}
+      {% else %}
+        <div class="container rounded bg-recipe-card mt-4 pt-1">
+                <div class='recipe_image_card'>
+                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
+                        <img alt="Name" class='image' width="300" height="200" src={{ recipe.link_to_photo_api }}>
+                    </a>
+                </div>
+                <div class="">
+                    <div class='recipe_information_name'>
+                        <a href='/recipe/?q={{ recipe.id }}' class='text'>
+                            <h4 title class="text">
+                                {{ recipe.name }}
+                            </h4>
+                            <p></p>
+                        </a>
+                    </div>
+                    <div class='recipe_information'></div>
+                </div>
+            </div>
+      {% endif %}
+      {% endfor %}
+      </div>
+</div>
 {% endblock %}
+
+
+
+
+
