@@ -21,12 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n1g$nzyfu0^$n34h@s21_f-l-pu$iql^3#ntv)d1-e(3v&7+$*'
+with open('secret_key.txt') as f:
+    SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -131,9 +132,7 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = os.path.join(_PATH, 'files', 'static')
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(_PATH, 'static'),
-)
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -148,6 +147,12 @@ EMAIL_HOST_USER = 'upfood.amoeba'
 EMAIL_HOST_PASSWORD = 'AmoebaProto873'
 EMAIL_USE_SSL = 'YES'
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_PRELOAD = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
