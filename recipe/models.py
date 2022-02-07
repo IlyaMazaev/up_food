@@ -13,7 +13,7 @@ class Profile(models.Model):
         ('NS', 'Не указано')
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='default.jpg', upload_to='profile_img')
+    image = models.ImageField(default='default.jpg')
     fav = models.CharField(max_length=300, blank=True)
     cart = models.CharField(max_length=1000, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)

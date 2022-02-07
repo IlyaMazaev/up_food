@@ -66,6 +66,14 @@ def register(request):
     return render(request, 'registration/register.html', context)
 
 
+def menu(request):
+    user_photo = request.user.image
+    context = dict(
+        image=user_photo
+    )
+    return render(request, 'menu.html', context)
+
+
 def order(request):
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
@@ -89,7 +97,16 @@ def add_cart(request):
     ans = request.GET.getlist('dropdown')
     cart = Profile.objects.get(user_id=request.user.id)
     for i in ans:
-        cart.cart += i + ';'
+        if i != 'Не требуется':
+            if cart.cart.find(i + ';') == -1:
+                cart.cart += i + ';'
+    cart.save()
+    return redirect('/')
+
+
+def clear_cart(request):
+    cart = Profile.objects.get(user_id=request.user.id)
+    cart.cart = ''
     cart.save()
     return redirect('/')
 
@@ -102,6 +119,15 @@ def add_fav(request):
     fav.fav += q + ';'
     fav.save()
     return redirect('/')
+
+def remove_fav(request):
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+    current_user = request.user
+    fav = Profile.objects.get(user_id=current_user.id)
+    fav.fav = fav.fav.replace(q + ';', '')
+    fav.save()
+    return redirect('/favorite/')
 
 
 @login_required
