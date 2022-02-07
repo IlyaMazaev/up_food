@@ -17,6 +17,10 @@ from django.contrib import admin
 from recipe.views import main_page, recipe, register, profile, order, add_cart, add_fav, favorite, cart, clear_cart, remove_fav
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+from upfood_site import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -32,7 +36,6 @@ urlpatterns = [
     path('favorite/', favorite),
     path('cart/', cart),
     path('cart/clearcart', clear_cart),
-
-
-
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += staticfiles_urlpatterns()
