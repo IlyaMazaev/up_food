@@ -104,7 +104,6 @@ class RecipeImageResource(Resource):
     """
 
     @staticmethod
-    @auth.login_required
     def abort_if_not_found(recipe_id):
         """
         aborts 404 error if it can't fond recipe with given id
@@ -116,7 +115,6 @@ class RecipeImageResource(Resource):
         if not recipe:
             abort(404, message=f"Recipe {recipe_id} not found")
 
-    @auth.login_required
     def get(self, recipe_id):
         """
         sends image of recipe with id given as param
