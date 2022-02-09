@@ -34,11 +34,9 @@ n_program_post_parser.add_argument('meals_data_json', required=True)
 n_program_post_parser.add_argument('type', required=True)
 n_program_post_parser.add_argument('photo_address', required=False)
 
-
 # arg parser for n programs searching
 n_program_tags_search_parser = reqparse.RequestParser()
 n_program_tags_search_parser.add_argument('search_request', required=False)
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '9CB2FA9ED59693626BC2'
@@ -260,8 +258,6 @@ class ProductsBondedListResource(Resource):
         return jsonify({'products': get_products_bonded_with_recipe(recipe)})
 
 
-
-
 class NutritionProgramResource(Resource):
     """
     Resource class for REST api
@@ -386,12 +382,6 @@ class SearchableNutritionProgramListResource(Resource):
         n_programs = nutrition_program_tags_search(args['search_request'])
 
         return jsonify({'nutrition_programs': [item.to_dict() for item in n_programs]})
-
-
-
-
-
-
 
 
 @app.route('/')
@@ -600,6 +590,27 @@ def get_products_bonded_with_recipe(recipe):
 
     print(bonded_products)
     return bonded_products
+
+
+def nutrition_program_tags_search(search_input):
+    """input: searching request
+    output: prints found nutrition programs
+    returns a list of found NutritionProgram objects """
+
+    n_programs_found = list()  # list which contains all found recipes
+    for word in search_input.split():  # each word is an separated key
+        db_sess = db_session.create_session()
+        # searches for recipes where tags contain word
+        search_query = db_sess.query(NutritionProgram).filter(
+            NutritionProgram.tags.like('%' + word.lower() + '%')).all()
+        print(search_query)
+
+        for found_n_program in search_query:  # found recipes for word
+            n_programs_found.append(found_n_program)
+            # printing data
+
+    # returns a list of found NutritionProgram objects
+    return n_programs_found
 
 
 def main():
