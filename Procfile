@@ -1,1 +1,1 @@
-web: gunicorn myproject.wsgi
+web: gunicorn --chdir upfood_site upfood_site.wsgi
