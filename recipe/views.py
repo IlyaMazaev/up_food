@@ -5,7 +5,7 @@ from requests import get
 from requests.auth import HTTPBasicAuth
 
 from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from recipe.models import Profile
+from recipe.models import Profile, Comments
 
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
@@ -41,12 +41,15 @@ def recipe(request):
         allfav = fav.fav.split(';')
         if q in allfav:
             dis_button_fav = True
+    recipe_id = rec.get('recipe').get('id')
+    comments = Comments.objects.filter(recipe_id=recipe_id)
     context = dict(
         recipe=rec,
         ing=rec.get('recipe').get('ingredients').split(';'),
         q=q,
         log=logged,
         disable=dis_button_fav,
+        comments=comments,
     )
     return render(request, 'recipe_template.html', context)
 

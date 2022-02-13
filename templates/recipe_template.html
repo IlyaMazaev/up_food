@@ -16,9 +16,10 @@
                     <form action="add_fav_recipe" method="GET">
                         <button type="submit" class="btn btn-default" value="{{ q }}" name="q">В избранное</button>
                     </form>
-                {% elif disable is True and log is True%}
+                {% elif disable is True and log is True %}
                     <form action="remove_fav_recipe" method="GET">
-                        <button type="submit" class="btn btn-default" value="{{ q }}" name="q">Удалить из избранного</button>
+                        <button type="submit" class="btn btn-default" value="{{ q }}" name="q">Удалить из избранного
+                        </button>
                     </form>
                 {% endif %}
                 <div class="text_type">
@@ -66,6 +67,14 @@
                         <span itemprop="text">
                             {{ recipe.recipe.how_to_cook }}
                         </span>
+                    </div>
+                </div>
+                <div class="comments">
+                    <div class="comments_title">
+                        <h3 class="how_title">Комментарии:</h3>
+                    </div>
+                    <div class="container rounded bg-recipe-page mt-4 pt-1">
+
                     </div>
                 </div>
             </div>

@@ -1,7 +1,6 @@
-from django.db import models
-from django.contrib.auth.models import User
 from PIL import Image
-
+from django.contrib.auth.models import User
+from django.db import models
 
 
 # Create your models here.
@@ -18,7 +17,6 @@ class Profile(models.Model):
     cart = models.CharField(max_length=1000, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
 
-
     def __str__(self):
         return f'{self.user.username} Profile'
 
@@ -29,3 +27,17 @@ class Profile(models.Model):
             output_size = (300, 300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+
+class Comments(models.Model):
+    recipe_id = models.IntegerField()
+    user = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    comment_text = models.TextField(max_length=150)
+    likes = models.IntegerField(default=0)
+
+
+class Reply(models.Model):
+    comments = models.OneToOneField(Comments, on_delete=models.CASCADE)
+    user = models.OneToOneField(Profile, on_delete=models.CASCADE)
+    reply_text = models.TextField(max_length=150)
+    likes = models.IntegerField(default=0)
