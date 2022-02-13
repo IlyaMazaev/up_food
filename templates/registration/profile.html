@@ -7,21 +7,26 @@
             <div class="card">
                 <h3 class="card-header">Профиль</h3>
                 <div class="card-body">
-                    <img src="{{ user.profile.image.url }}" width="300" height="300">
-                    <p>Username: {{ user.username }}</p>
+                    <img src="{{ user.profile.image.url }}" width="200" height="200">
+                    <p>Имя пользователя: {{ user.username }}</p>
                     <p>Email: {{ user.email }}</p>
                     <hr>
                     <h5>Изменить данные</h5>
                     <hr>
-                    <form method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        {{ u_form|crispy }}
-                        {{ p_form|crispy }}
-                        <input type="submit" class="btn btn-primary" value="Сохранить изменения">
-                    </form>
-                    <form action="/accounts/logout/" method="GET">
-                        <button class="btn btn-primary">Выйти из аккаунта</button>
-                    </form>
+                    <div>
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ u_form|crispy }}
+                            {{ p_form|crispy }}
+                            <input type="submit" class="btn btn-primary" value="Сохранить изменения">
+                        </form>
+                    </div>
+
+                    <div>
+                        <form action="/accounts/logout/" method="GET">
+                            <button class="btn btn-danger">Выйти из аккаунта</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
