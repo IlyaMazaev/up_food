@@ -15,7 +15,7 @@ class Profile(models.Model):
     image = models.ImageField(default='default.jpg')
     fav = models.CharField(max_length=300, blank=True)
     cart = models.CharField(max_length=1000, blank=True)
-    gender = models.CharField(max_length=2, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=2, choices=GENDER_CHOICES, default='NS')
 
     def __str__(self):
         return f'{self.user.username} Profile'

@@ -16,8 +16,39 @@
                     <div>
                         <form method="POST" enctype="multipart/form-data">
                             {% csrf_token %}
-                            {{ u_form|crispy }}
-                            {{ p_form|crispy }}
+                            <div id="div_id_username" class="form-group">
+                                <label for="id_username" class=" requiredField">
+                                    Имя пользователя<span class="asteriskField">*</span>
+                                </label>
+                                <div class="">
+                                    <input type="text" name="username" value="admin" maxlength="150"
+                                           class="textinput textInput form-control" required=""
+                                           id="id_username">
+                                    <small id="hint_id_username" class="form-text text-muted">Обязательное
+                                        поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.</small>
+                                </div>
+                            </div>
+                            <div id="div_id_email" class="form-group">
+                                <label for="id_email" class=" requiredField">
+                                    Email<span class="asteriskField">*</span>
+                                </label>
+                                <div class="">
+                                    <input type="email" name="email" value="admin@admin.admin"
+                                           class="emailinput form-control" required="" id="id_email"></div>
+                            </div>
+
+                            <div id="div_id_image" class="form-group">
+                                <label for="id_image" class=" requiredField">
+                                    Image<span class="asteriskField">*</span>
+                                </label>
+                                <div class="">
+
+                                    На данный момент: <a href="/media/default.jpg">default.jpg</a><br>
+                                    Изменить:
+                                    <input type="file" name="image" accept="image/*"
+                                           class="clearablefileinput form-control-file" id="id_image"></div>
+                            </div>
+
                             <input type="submit" class="btn btn-primary" value="Сохранить изменения">
                         </form>
                     </div>

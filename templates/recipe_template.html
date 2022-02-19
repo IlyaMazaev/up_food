@@ -73,9 +73,14 @@
                     <div class="comments_title">
                         <h3 class="how_title">Комментарии:</h3>
                     </div>
+                    {% for coms in comments %}
                     <div class="container rounded bg-recipe-page mt-4 pt-1">
-
+                        <span>{{ coms.user.get_username}}</span>
+                        <span itemprop="text">
+                            {{ coms.comment_text }}
+                        </span>
                     </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
