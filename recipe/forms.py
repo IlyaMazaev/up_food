@@ -26,7 +26,7 @@ class UserRegisterForm(UserCreationForm):
 class ProfileRegisterForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['gender']
+        fields = ['gender', 'birth_date']
 
 
 class UserUpdateForm(forms.ModelForm):

@@ -16,6 +16,7 @@ class Profile(models.Model):
     fav = models.CharField(max_length=300, blank=True)
     cart = models.CharField(max_length=1000, blank=True)
     gender = models.CharField(max_length=2, choices=GENDER_CHOICES, default='NS')
+    birth_date = models.DateField(default='1990-01-01')
 
     def __str__(self):
         return f'{self.user.username} Profile'
