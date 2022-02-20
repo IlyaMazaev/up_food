@@ -1,11 +1,14 @@
+import time
+
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from requests import get
 from requests.auth import HTTPBasicAuth
 
-from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from recipe.models import Profile
+from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProfileRegisterForm
+from recipe.models import Profile, Comments, User
 
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
@@ -35,18 +38,21 @@ def recipe(request):
     rec = get('https://recipes-db-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
     logged = request.user.is_authenticated
     dis_button_fav = False
-    if logged == True:
+    if logged:
         current_user = request.user
         fav = Profile.objects.get(user_id=current_user.id)
         allfav = fav.fav.split(';')
         if q in allfav:
             dis_button_fav = True
+    recipe_id = rec.get('recipe').get('id')
+    comments = Comments.objects.filter(recipe_id=recipe_id)
     context = dict(
         recipe=rec,
         ing=rec.get('recipe').get('ingredients').split(';'),
         q=q,
         log=logged,
         disable=dis_button_fav,
+        comments=comments,
     )
     return render(request, 'recipe_template.html', context)
 
@@ -59,10 +65,16 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Профиль создан для {username}')
+            new_user = authenticate(username=form.cleaned_data['username'],
+                                    password=form.cleaned_data['password1'],
+                                    )
+            login(request, new_user)
             return redirect('/')
     else:
         form = UserRegisterForm()
-    context['form'] = form
+    context = {
+        'form': form,
+    }
     return render(request, 'registration/register.html', context)
 
 
@@ -119,6 +131,7 @@ def add_fav(request):
     fav.fav += q + ';'
     fav.save()
     return redirect('/')
+
 
 def remove_fav(request):
     if 'q' in request.GET and request.GET['q']:
