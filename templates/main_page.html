@@ -3,11 +3,12 @@
 {% block content %}
     <div class="row">
         <div class="col-sm">
-            {% if request.user.is_authenticated %}
-                 <!--<h1 style=text-align:center>Добро пожаловать, {{ request.user }}!</h1> -->
-            <h1 style=text-align:center>Добро пожаловать!</h1>
-            {% else %}
-                <h1 style=text-align:center>Добро пожаловать!</h1>
+            {% if day_time == 'morning' %}
+                 <h1 style=text-align:center>Доброе утро!</h1>
+            {% elif day_time == 'afternoon' %}
+                <h1 style=text-align:center>Добрый день!</h1>
+            {% elif day_time == 'evening' %}
+                <h1 style=text-align:center>Добрый вечер!</h1>
             {% endif %}
             <p class="lead"></p>
         </div>
@@ -30,7 +31,7 @@ headers: {'Authorization': 'Basic ' + btoa('api_user:super_secret_password')}})
         <div class="container rounded bg-recipe-card mt-4 pt-1">
                 <div class='recipe_image_card'>
                     <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
-                        <img alt="Name" class='image' width="300" height="200" src={{ recipe.link_to_photo_api }}>
+                        <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220" src={{ recipe.link_to_photo_api }}>
                     </a>
                 </div>
                 <div class="">
@@ -53,7 +54,7 @@ headers: {'Authorization': 'Basic ' + btoa('api_user:super_secret_password')}})
         <div class="container rounded bg-recipe-card mt-4 pt-1">
                 <div class='recipe_image_card'>
                     <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
-                        <img alt="Name" class='image' width="300" height="200" src={{ recipe.link_to_photo_api }}>
+                        <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220" src={{ recipe.link_to_photo_api }}>
                     </a>
                 </div>
                 <div class="">

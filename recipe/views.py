@@ -1,4 +1,4 @@
-import time
+from django.utils.timezone import now
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -8,7 +8,7 @@ from requests import get
 from requests.auth import HTTPBasicAuth
 
 from recipe.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm, ProfileRegisterForm
-from recipe.models import Profile, Comments, User
+from recipe.models import Profile, Comments
 
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
@@ -17,6 +17,16 @@ basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
 def main_page(request):
     q = ''
+    day_time = ''
+    d_t = now().hour + 3
+    if d_t < 12 and d_t > 4:
+        day_time = 'morning'
+    elif d_t > 12 and d_t < 17:
+        day_time = 'afternoon'
+    elif d_t > 17 and d_t != 0:
+        day_time = 'evening'
+    else:
+        day_time = 'night'
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
     if q != '':
@@ -26,7 +36,8 @@ def main_page(request):
         rec = get('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic).json()
     context = dict(
         recipe=rec,
-        q=q
+        q=q,
+        day_time=day_time,
     )
     return render(request, 'main_page.html', context)
 
@@ -69,13 +80,28 @@ def register(request):
                                     password=form.cleaned_data['password1'],
                                     )
             login(request, new_user)
-            return redirect('/')
+            return redirect('/accounts/profile_register/')
     else:
         form = UserRegisterForm()
     context = {
         'form': form,
     }
     return render(request, 'registration/register.html', context)
+
+
+def profile_register(request):
+    context = dict()
+    if request.method == 'POST':
+        form = ProfileRegisterForm(request.POST, instance=Profile.objects.get(user_id=request.user.id))
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = ProfileRegisterForm(instance=Profile.objects.get(user_id=request.user.id))
+    context = {
+        'form': form,
+    }
+    return render(request, 'registration/profile_register.html', context)
 
 
 def menu(request):
@@ -197,7 +223,6 @@ def cart(request):
                         price += float(j.replace(',', '.'))
                         c = 0
     price = '{:.2f}'.format(price)
-
     context = dict(
         price=price,
         prod=all_cart,
