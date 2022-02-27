@@ -165,10 +165,10 @@ EMAIL_USE_SSL = 'YES'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = False
-SECURE_HSTS_INCLUDE_SUBDOMAINS = False
-SECURE_SSL_REDIRECT = False
-SECURE_HSTS_PRELOAD = False
+SECURE_HSTS_SECONDS = True
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_PRELOAD = True
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
