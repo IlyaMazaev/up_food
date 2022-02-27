@@ -1,9 +1,8 @@
-from django.utils.timezone import now
-
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.utils.timezone import now
 from requests import get
 from requests.auth import HTTPBasicAuth
 
@@ -61,7 +60,6 @@ def recipe(request):
         recipe=rec,
         ing=rec.get('recipe').get('ingredients').split(';'),
         q=q,
-        log=logged,
         disable=dis_button_fav,
         comments=comments,
     )
@@ -149,6 +147,15 @@ def clear_cart(request):
     return redirect('/')
 
 
+def remove_from_cart(request):
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+    cart = Profile.objects.get(user_id=request.user.id)
+    cart.cart = cart.cart.replace(q, '')
+    cart.save()
+    return redirect('/cart/')
+
+
 def add_fav(request):
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
@@ -156,7 +163,16 @@ def add_fav(request):
     fav = Profile.objects.get(user_id=current_user.id)
     fav.fav += q + ';'
     fav.save()
-    return redirect('/')
+    return redirect('/recipe/?q=' + q)
+
+
+def add_comment(request):
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+    current_profile = Profile.objects.get(user_id=request.user.id)
+    text = request.GET.get('textbox')
+    com = Comments.objects.create_comment(q, current_profile, text, 0)
+    return redirect('/recipe/?q=' + q)
 
 
 def remove_fav(request):
@@ -188,6 +204,17 @@ def profile(request):
         'p_form': p_form
     }
     return render(request, 'registration/profile.html', context)
+
+
+def add_cart(request):
+    ans = request.GET.getlist('dropdown')
+    cart = Profile.objects.get(user_id=request.user.id)
+    for i in ans:
+        if i != 'Не требуется':
+            if cart.cart.find(i + ';') == -1:
+                cart.cart += i + ';'
+    cart.save()
+    return redirect('/')
 
 
 def favorite(request):

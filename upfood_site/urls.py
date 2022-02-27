@@ -19,7 +19,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import path, include
 
 from recipe.views import main_page, recipe, register, profile, order, add_cart, add_fav, favorite, cart, clear_cart, \
-    remove_fav, profile_register
+    remove_fav, profile_register, add_comment, remove_from_cart
 from upfood_site import settings
 
 urlpatterns = [
@@ -36,7 +36,9 @@ urlpatterns = [
     path('favorite/', favorite),
     path('cart/', cart),
     path('cart/clearcart', clear_cart),
-    path('accounts/profile_register/', profile_register)
+    path('accounts/profile_register/', profile_register),
+    path('recipe/add_comment', add_comment),
+    path('cart/remove_from_cart', remove_from_cart)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()

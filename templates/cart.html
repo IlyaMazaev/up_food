@@ -1,23 +1,37 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-<h2>Корзина:</h2>
-<div class="container bg-recipe-page rounded mt-4 pt-1">
-    {% for i in prod %}
-    <div class="recipe_ing">
-        <span title="" class="rec_ing">
-            <span itemprop="recipeIngredient">{{ i }}</span>
-        </span>
+    <h2>Корзина:</h2>
+    <div class="container bg-recipe-page rounded mt-4 pt-1">
+        {% for i in prod %}
+            <div class="recipe_ing">
+                <span title="" class="rec_ing">
+                    {% if i != '' %}
+                    <form action="remove_from_cart" method="GET">
+                        <span itemprop="recipeIngredient">{{ i }}</span>
+                        <button class="btn-invisible" type="submit" name='q' value='{{ i }}'><svg
+                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor"
+                                class="bi bi-x"
+                                viewBox="0 0 16 16">
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                        </svg></button>
+                    </form>
+                    {% endif %}
+                </span>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-</div>
-{% if price != '0.00' %}
-<h4>Итоговая сумма: {{ price }}руб</h4>
-<form action="clearcart" method="GET">
-    <button type="submit" class="btn btn-default" name="clearcart">Очистить корзину</button>
-</form>
-{% else %}
-<h4>Вы пока ещё ничего не добавили в корзину</h4>
-{% endif %}
+    {% if price != '0.00' %}
+        <h4>Итоговая сумма: {{ price }}руб</h4>
+        <form action="clearcart" method="GET">
+            <button type="submit" class="btn btn-default" name="clearcart">Очистить корзину</button>
+        </form>
+    {% else %}
+        <h4>Вы пока ещё ничего не добавили в корзину</h4>
+    {% endif %}
+<div align="center">
 <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A433f363496255ec5283b1da0a4a39151021148fa5cd0a0946ec87ad6664dfa50&amp;source=constructor" width="935" height="558" frameborder="0"></iframe>    </div>
+</div>
+
 {% endblock %}
