@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_filters %}
 {% load crispy_forms_tags %}
 {% block content %}
     <div class="row">
@@ -9,29 +10,7 @@
                     <h5>Пожалуйста, настройте свой профиль</h5>
                     <form method="POST">
                         {% csrf_token %}
-                        <div id="div_id_gender" class="form-group">
-                            <label for="id_gender" class=" requiredField">
-                                Пол<span class="asteriskField">*</span>
-                            </label>
-                            <div class="">
-                                <select name="gender" class="select form-control" id="id_gender">
-                                    <option value="M">Мужчина</option>
-                                    <option value="F">Женщина</option>
-                                    <option value="NS">Не указано</option>
-
-                                </select>
-                            </div>
-                        </div>
-                        <div id="div_id_birth_date" class="form-group">
-                            <label for="id_birth_date" class=" requiredField">
-                                Дата рождения<span class="asteriskField">*</span>
-                            </label>
-                            <div class="">
-                                <input type="date" name="birth_date" value="01.01.1990"
-                                       class="dateinput form-control" required="" id="id_birth_date">
-                            </div>
-                        </div>
-
+                        {{ form|crispy }}
                         <input type="submit" class="btn btn-primary" value="Закончить настройку">
                     </form>
                 </div>
