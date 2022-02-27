@@ -83,10 +83,23 @@ WSGI_APPLICATION = 'upfood_site.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
+
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+        'NAME': 'daamc2p45p3ouj',
+
+        'USER': 'tjxdqfdwwtvhcj',
+
+        'PASSWORD': 'c9771cd7437c5d95089291ba1698677641b349143df72de3685d5cd3b90336da',
+
+        'HOST': 'ec2-34-255-225-151.eu-west-1.compute.amazonaws.com',
+
+        'PORT': '5432',
+
     }
+
 }
 
 
@@ -152,10 +165,10 @@ EMAIL_USE_SSL = 'YES'
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-SECURE_HSTS_SECONDS = True
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_PRELOAD = True
+SECURE_HSTS_SECONDS = False
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_SSL_REDIRECT = False
+SECURE_HSTS_PRELOAD = False
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
