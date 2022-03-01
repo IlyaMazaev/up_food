@@ -57,8 +57,14 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
+    GENDER_CHOICES = (
+        ('M', 'Мужчина'),
+        ('F', 'Женщина'),
+        ('NS', 'Не указано')
+    )
+    gender = forms.ChoiceField(label='Пол', choices=GENDER_CHOICES)
     image = forms.ImageField()
 
     class Meta:
         model = Profile
-        fields = ['image']
+        fields = ['gender', 'image']

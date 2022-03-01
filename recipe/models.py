@@ -17,6 +17,7 @@ class Profile(models.Model):
     cart = models.CharField(max_length=1000, blank=True)
     gender = models.CharField(max_length=4, choices=GENDER_CHOICES, default='NS')
     birth_date = models.DateField(default='1990-01-01')
+    verified = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -29,11 +30,13 @@ class Profile(models.Model):
             img.thumbnail(output_size)
             img.save(self.image.path)
 
+
 class CommentsManager(models.Manager):
     def create_comment(self, recipe_id, user, comment_text, likes):
         comment = self.create(recipe_id=recipe_id, user=user, comment_text=comment_text, likes=likes)
         # do something with the book
         return comment
+
 
 class Comments(models.Model):
     recipe_id = models.IntegerField()
