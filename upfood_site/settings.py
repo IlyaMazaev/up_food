@@ -28,7 +28,7 @@ with open('secret_key.txt') as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['.herokuapp.com', 'takecook.ru', '.takecook.ru']
+ALLOWED_HOSTS = ['takecook.ru', '.takecook.ru']
 
 
 # Application definition
