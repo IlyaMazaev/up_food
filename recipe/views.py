@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.timezone import now
 from requests import get
@@ -78,6 +79,7 @@ def register(request):
                                     password=form.cleaned_data['password1'],
                                     )
             login(request, new_user)
+            request.session['form-submitted'] = True
             return redirect('/accounts/profile_register/')
     else:
         form = UserRegisterForm()
@@ -88,18 +90,22 @@ def register(request):
 
 
 def profile_register(request):
-    context = dict()
-    if request.method == 'POST':
-        form = ProfileRegisterForm(request.POST, instance=Profile.objects.get(user_id=request.user.id))
-        if form.is_valid():
-            form.save()
-            return redirect('/')
+    if not request.session.get('form-submitted', False):
+        raise Http404('Упс, что-то пошло не так')
     else:
-        form = ProfileRegisterForm(instance=Profile.objects.get(user_id=request.user.id))
-    context = {
-        'form': form,
-    }
-    return render(request, 'registration/profile_register.html', context)
+        context = dict()
+        if request.method == 'POST':
+            form = ProfileRegisterForm(request.POST, instance=Profile.objects.get(user_id=request.user.id))
+            if form.is_valid():
+                form.save()
+                request.session['form-submitted'] = False
+                return redirect('/')
+        else:
+            form = ProfileRegisterForm(instance=Profile.objects.get(user_id=request.user.id))
+        context = {
+            'form': form,
+        }
+        return render(request, 'registration/profile_register.html', context)
 
 
 def menu(request):
