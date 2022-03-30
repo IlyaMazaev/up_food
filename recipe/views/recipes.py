@@ -1,0 +1,47 @@
+from django.shortcuts import render
+from django.shortcuts import render
+from requests import get
+from requests.auth import HTTPBasicAuth
+
+from recipe.forms import AddNewRecipe
+from recipe.models import Profile, Comments
+
+basic = HTTPBasicAuth('api_user', 'super_secret_password')
+
+
+def recipe(request):
+    q = ''
+    if 'q' in request.GET and request.GET['q']:
+        q = request.GET['q']
+    rec = get('https://recipes-db-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
+    logged = request.user.is_authenticated
+    dis_button_fav = False
+    if logged:
+        current_user = request.user
+        fav = Profile.objects.get(user_id=current_user.id)
+        allfav = fav.fav.split(';')
+        if q in allfav:
+            dis_button_fav = True
+    recipe_id = rec.get('recipe').get('id')
+    comments = Comments.objects.filter(recipe_id=recipe_id)
+    context = dict(
+        recipe=rec,
+        ing=rec.get('recipe').get('ingredients').split(';'),
+        q=q,
+        disable=dis_button_fav,
+        comments=comments,
+    )
+    return render(request, 'recipe_template.html', context)
+
+
+def add_new_recipe(request):
+    if request.method == 'POST':
+        form = AddNewRecipe(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = AddNewRecipe()
+    context = {
+        'form': form
+    }
+    return render(request, 'recipe_create.html', context)

@@ -40,7 +40,7 @@ class CommentsManager(models.Manager):
 
 class Comments(models.Model):
     recipe_id = models.IntegerField()
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, unique=False)
+    user = models.ForeignKey(Profile, on_delete=models.SET_NULL, unique=False, null=True)
     comment_text = models.TextField(max_length=150)
     likes = models.IntegerField(default=0)
     objects = CommentsManager()
@@ -48,6 +48,16 @@ class Comments(models.Model):
 
 class Reply(models.Model):
     comments = models.OneToOneField(Comments, on_delete=models.CASCADE)
-    user = models.OneToOneField(Profile, on_delete=models.CASCADE, unique=False)
+    user = models.OneToOneField(Profile, on_delete=models.SET_NULL, unique=False, null=True)
     reply_text = models.TextField(max_length=150)
     likes = models.IntegerField(default=0)
+
+
+class AddNewRecipeModel(models.Model):
+    name = models.CharField(default='Name', max_length=70)
+    products = models.CharField(default='Products', max_length=400)
+    instructions = models.CharField(default="Instructions", max_length=400)
+    tags = models.CharField(blank=True, max_length=200)
+    image = models.ImageField(blank=True)
+    verified = models.BooleanField(default=False)
+    user = models.OneToOneField(Profile, on_delete=models.SET_NULL, null=True)

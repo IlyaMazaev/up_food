@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 
-from .models import Profile
+from .models import Profile, AddNewRecipeModel
 
 
 class UserRegisterForm(UserCreationForm):
@@ -68,3 +68,16 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['gender', 'image']
+
+
+class AddNewRecipe(forms.ModelForm):
+    name = forms.CharField(label='Название')
+    products = forms.CharField(label='Продукты', help_text='Вводите ингредиенты  и их граммовки через  точку запятую. '
+                                                           'Пример: Грудка курина 300 гр; Картофель молодой 1 кг; ...')
+    instruction = forms.CharField(label='Инструкция по приготовлению')
+    tags = forms.CharField(label='Тэги', required=False)
+    image = forms.ImageField(label='Изображение', required=False)
+
+    class Meta:
+        model = AddNewRecipeModel
+        fields = ['name', 'products', 'instruction', 'tags', 'image']
