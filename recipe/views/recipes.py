@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.core import serializers
 from django.shortcuts import render
 from requests import get
 from requests.auth import HTTPBasicAuth
 
 from recipe.forms import AddNewRecipe
-from recipe.models import Profile, Comments
+from recipe.models import Profile, Comments, RecipeModel
+from recipe.serializers import RecipeSerializers
 
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
@@ -38,7 +39,10 @@ def add_new_recipe(request):
     if request.method == 'POST':
         form = AddNewRecipe(request.POST)
         if form.is_valid():
-            pass
+            form.save()
+            data = RecipeSerializers(RecipeModel.objects.first())
+            RecipeModel.objects.all().delete()
+            print(data.data)
     else:
         form = AddNewRecipe()
     context = {

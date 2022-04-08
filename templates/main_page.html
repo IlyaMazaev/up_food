@@ -13,9 +13,10 @@
             <p class="lead"></p>
         </div>
         <form method="GET" class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Поиск..." id="search_box" name="q">
+            <label for="search_box"></label><input type="text" class="form-control" placeholder="Поиск..." id="search_box" name="q">
         </form>
     </div>
+
 
 <script>
 fetch('https://recipes-db-api.herokuapp.com/api/recipes/photo/1', {method:'GET',

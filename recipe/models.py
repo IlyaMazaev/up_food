@@ -53,11 +53,13 @@ class Reply(models.Model):
     likes = models.IntegerField(default=0)
 
 
-class AddNewRecipeModel(models.Model):
+class RecipeModel(models.Model):
     name = models.CharField(default='Name', max_length=70)
-    products = models.CharField(default='Products', max_length=400)
-    instructions = models.CharField(default="Instructions", max_length=400)
+    ingredients = models.CharField(max_length=400)
+    instructions = models.CharField(max_length=400)
     tags = models.CharField(blank=True, max_length=200)
     image = models.ImageField(blank=True)
-    verified = models.BooleanField(default=False)
     user = models.OneToOneField(Profile, on_delete=models.SET_NULL, null=True)
+    products = models.JSONField(blank=True, null=True)
+    portions = models.IntegerField(default=1)
+    time = models.CharField(max_length=20, default='1 час')
