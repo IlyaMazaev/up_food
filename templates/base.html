@@ -1,55 +1,63 @@
 <!DOCTYPE html>
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-        <link rel="stylesheet"
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet"
           href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
           crossorigin="anonymous">
-        <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
-        <title>БериГотовь</title>
-        {% load static %}
-        <link rel="shortcut icon" type="image/png" href="{% static 'logo_1_round.ico' %}"/>
-        {% include 'css.html'%}
-        {% block extra_css %}{% endblock %}
-    </head>
-    <body class="d-flex flex-column h-100">
-        <header>
-            {% include 'menu.html' %}
-        </header>
+    <script src="https://kit.fontawesome.com/yourcode.js" crossorigin="anonymous"></script>
+    <title>БериГотовь</title>
+    {% load static %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'logo_1_round.ico' %}"/>
+    {% include 'css.html' %}
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column h-100">
+<header>
+    {% include 'menu.html' %}
+</header>
 
-        <main class="flex-shrink-0">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm">
-                        {{ page_title }}
-                    </div>
-                </div>
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-                {% block content %}{% endblock %}
+<main class="flex-shrink-0">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                {{ page_title }}
             </div>
-        </main>
-        <hr>
-        <footer>
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm">
-                        © БериГотовь
-                    </div>
-                </div>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+</main>
+<hr>
+<footer>
+    <div class="container">
+        <div class="">
+            <div class="col-">
+                <span><b>Дополнительная информация:</b></span>
             </div>
-        </footer>
-        {% block js %}
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
-                crossorigin="anonymous"></script>
-        {% endblock %}
-        {% block extra_js %}{% endblock %}
-    </body>
+            <div class="row">
+                <a title="Наша команда" class="col- footer_url" href="/about">О сайте</a>
+                <a title="Контакты" class="col- footer_url" href="/contacts">Контакты</a>
+                <a title="Политика конфиденциальности" class="col- footer_url" href="/privacy">Политика
+                    конфиденциальности</a>
+            </div>
+
+        </div>
+    </div>
+</footer>
+{% block js %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+            crossorigin="anonymous"></script>
+{% endblock %}
+{% block extra_js %}{% endblock %}
+</body>
 </html>

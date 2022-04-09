@@ -38,7 +38,10 @@ urlpatterns = [
     path('accounts/profile_register/', profile_register),
     path('recipe/add_comment', add_comment),
     path('cart/remove_from_cart', remove_from_cart),
-    path('recipe/addrecipe', add_new_recipe)
+    path('recipe/addrecipe', add_new_recipe),
+    path('privacy', privacy),
+    path('about', about),
+    path('contacts', contacts),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += staticfiles_urlpatterns()

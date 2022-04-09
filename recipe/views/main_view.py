@@ -39,3 +39,15 @@ def menu(request):
         image=user_photo
     )
     return render(request, 'menu.html', context)
+
+
+def privacy(request):
+    return render(request, 'privacy.html')
+
+
+def about(request):
+    return render(request, 'about.html')
+
+
+def contacts(request):
+    return render(request, 'contacts.html')
