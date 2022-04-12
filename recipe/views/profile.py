@@ -23,7 +23,7 @@ def profile(request):
         'u_form': u_form,
         'p_form': p_form
     }
-    return render(request, 'registration/profile.html', context)
+    return render(request, 'registration/../../templates/profile/profile.html', context)
 
 
 def add_fav(request):
@@ -68,4 +68,4 @@ def favorite(request):
     context = dict(
         fav=rec
     )
-    return render(request, 'favorite.html', context)
+    return render(request, 'profile/favorite.html', context)

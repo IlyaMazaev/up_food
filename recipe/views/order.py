@@ -24,7 +24,7 @@ def order(request):
         q=q
 
     )
-    return render(request, "order_form.html", context)
+    return render(request, "order/order_form.html", context)
 
 
 @login_required
@@ -76,4 +76,4 @@ def cart(request):
         price=price,
         prod=all_cart,
     )
-    return render(request, 'cart.html', context)
+    return render(request, 'profile/cart.html', context)

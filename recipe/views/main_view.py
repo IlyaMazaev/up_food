@@ -42,12 +42,12 @@ def menu(request):
 
 
 def privacy(request):
-    return render(request, 'privacy.html')
+    return render(request, 'info/privacy.html')
 
 
 def about(request):
-    return render(request, 'about.html')
+    return render(request, 'info/about.html')
 
 
 def contacts(request):
-    return render(request, 'contacts.html')
+    return render(request, 'info/contacts.html')

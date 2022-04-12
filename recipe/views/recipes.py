@@ -32,7 +32,7 @@ def recipe(request):
         disable=dis_button_fav,
         comments=comments,
     )
-    return render(request, 'recipe_template.html', context)
+    return render(request, 'recipes/recipe_template.html', context)
 
 
 def add_new_recipe(request):
@@ -50,4 +50,4 @@ def add_new_recipe(request):
     context = {
         'form': form
     }
-    return render(request, 'recipe_create.html', context)
+    return render(request, 'recipes/recipe_create.html', context)
