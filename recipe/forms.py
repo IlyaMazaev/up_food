@@ -72,16 +72,16 @@ class ProfileUpdateForm(forms.ModelForm):
 
 class AddNewRecipe(forms.ModelForm):
     name = forms.CharField(label='Название')
-    ingredients = forms.CharField(label='Продукты',
+    ingredients = forms.CharField(label='Ингредиенты',
                                   help_text='Вводите ингредиенты  и их граммовки через  точку запятую. '
                                             'Пример: Грудка курина 300 гр; Картофель молодой 1 кг; ...')
-    instructions = forms.CharField(label='Инструкция по приготовлению')
-    tags = forms.CharField(label='Тэги', required=False)
-    image = forms.ImageField(label='Изображение', required=False)
-    products = forms.CharField(required=False, label='Продукты')
+    how_to_cook = forms.CharField(label='Инструкция по приготовлению')
+    types = forms.CharField(label='Тэги', required=False)
+    photo_address = forms.ImageField(label='Изображение', required=False)
+    bonded_ingredients = forms.CharField(required=False, label='Продукты')
     portions = forms.IntegerField(label='Количество порций')
     time = forms.CharField(label='Время готовки')
 
     class Meta:
         model = RecipeModel
-        fields = ['name', 'ingredients', 'instructions', 'tags', 'image', 'products', 'portions', 'time']
+        fields = ['name', 'ingredients', 'how_to_cook', 'types', 'photo_address', 'bonded_ingredients', 'portions', 'time']

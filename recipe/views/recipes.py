@@ -1,6 +1,6 @@
 from django.core import serializers
-from django.shortcuts import render
-from requests import get
+from django.shortcuts import render, redirect
+from requests import get, post
 from requests.auth import HTTPBasicAuth
 
 from recipe.forms import AddNewRecipe
@@ -42,7 +42,9 @@ def add_new_recipe(request):
             form.save()
             data = RecipeSerializers(RecipeModel.objects.first())
             RecipeModel.objects.all().delete()
-            print(data.data)
+            r = post('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic, params=data.data)
+            print(r.status_code)
+            return redirect('/')
     else:
         form = AddNewRecipe()
     context = {

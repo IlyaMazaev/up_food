@@ -10,9 +10,9 @@ def main_page(request):
     q = ''
     day_time = ''
     d_t = now().hour + 3
-    if d_t < 12 and d_t > 4:
+    if 12 > d_t > 4:
         day_time = 'morning'
-    elif d_t > 12 and d_t < 17:
+    elif 12 < d_t < 17:
         day_time = 'afternoon'
     elif d_t > 17 and d_t != 0:
         day_time = 'evening'
