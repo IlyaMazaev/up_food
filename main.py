@@ -11,10 +11,10 @@ from flask_httpauth import HTTPBasicAuth
 from flask_restful import reqparse, abort, Api, Resource
 
 from data import db_session  # db engine
+from data.images import Picture
 from data.nutrition_programs import NutritionProgram  # orm NutritionProgram class
 from data.products import Product  # orm Product class
 from data.recipes import Recipe  # orm Recipe class
-from data.images import Picture
 
 # arg parser for adding new recipes
 recipe_post_parser = reqparse.RequestParser()
@@ -84,7 +84,10 @@ class ImageResource(Resource):
         image = session.query(Picture).filter(Picture.call_id == call_id).first()
         return send_file(image.photo_address, mimetype='image/jpeg')
 
+
+class ImagePostResource(Resource):
     @staticmethod
+    @auth.login_required
     def post():
         """
         adds new image
@@ -110,7 +113,7 @@ class ImageResource(Resource):
         else:
             # creating Image class object
             image = Picture(call_id=dict_data['call_id'],
-                            photo_address=dict_data['file_name'])
+                            photo_address=f'static/img/{dict_data["file_name"]}')
 
             db_sess.add(image)
             db_sess.commit()
@@ -700,7 +703,7 @@ def main():
     api.add_resource(SearchableNutritionProgramListResource, '/nutrition_programs/search')
     api.add_resource(NutritionProgramImageResource, '/nutrition_programs/photo/<int:nutrition_program_id>')
 
-    # api.add_resource(ImageResource, '/images')
+    api.add_resource(ImagePostResource, '/images/add')
     api.add_resource(ImageResource, '/images/<int:call_id>')
 
     app.run()

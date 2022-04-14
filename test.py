@@ -12,7 +12,6 @@ base64_bytes = base64.b64encode(sample_string_bytes)
 base64_password = base64_bytes.decode("ascii")
 
 print(f"Encoded base 64 password: {base64_password}")
-'''
 # для поиска
 params_search = {'search_request': 'курин'}
 
@@ -21,7 +20,7 @@ only_auth_headers = {'Authorization': f'Basic {base64_password}'}
 
 # для авторизации через механизмы request
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
-
+'''
 # авторизация по заголовкам
 # для поиска:
 print(dumps(get('https://recipes-db-api.herokuapp.com/api/recipes/search', headers=only_auth_headers,
@@ -52,7 +51,7 @@ import json
 import base64
 from io import BytesIO
 
-img = Image.open("C:/Users/admin/Desktop/colors_2.jpg")
+img = Image.open("C:/Users/admin/Desktop/colors_3.jpg")
 
 # Convert Pillow Image to bytes and then to base64
 buffered = BytesIO()
@@ -69,7 +68,7 @@ files = {
     "img": img_str
 }
 
-r = requests.post("http://127.0.0.1:5000/api/images", json=json.dumps(files))  # POST to server as json
+r = requests.post("http://127.0.0.1:5000/api/images/add", json=json.dumps(files), headers=only_auth_headers)  # POST to server as json
 
 print(r.json())
 
