@@ -16,7 +16,8 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
     how_to_cook = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     tags = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     photo_address = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='static/img/file_error.jpg')
-    link_to_photo_api = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='https://recipes-db-api.herokuapp.com/api/recipes/photo/error')
+    link_to_photo_api = sqlalchemy.Column(sqlalchemy.String, nullable=True,
+                                          default='https://recipes-db-api.herokuapp.com/api/recipes/photo/error')
     portions = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     time = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     types = sqlalchemy.Column(sqlalchemy.String, nullable=False)

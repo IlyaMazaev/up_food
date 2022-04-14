@@ -13,4 +13,3 @@ class Picture(SqlAlchemyBase):
 
     def __repr__(self):
         return f'Image(id:{str(self.id)})'
-

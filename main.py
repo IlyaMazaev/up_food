@@ -67,7 +67,7 @@ class ImageResource(Resource):
         """
         aborts 404 error if it can't fond recipe with given id
         same as in RecipeResource class
-        :param recipe_id:
+        :param call_id:
         """
         session = db_session.create_session()
         image = session.query(Picture).filter(Picture.call_id == call_id).first()
