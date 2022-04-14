@@ -21,9 +21,9 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
     time = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     types = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     bonded_ingredients = sqlalchemy.Column(sqlalchemy.JSON, nullable=False)
+    creator_id = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     # some additional fields, currently not used
     date_time_added = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-    creator_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     some_additional_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_photo_address(self, address=''):

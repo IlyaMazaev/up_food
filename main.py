@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+import base64
+import json
 import os
+from io import BytesIO
 
 import pymorphy2  # creating tags based on words morphology
 from PIL import Image  # to show pics of recipes
-from flask import Flask, jsonify, send_file
+from flask import Flask, jsonify, send_file, request
 from flask_httpauth import HTTPBasicAuth
 from flask_restful import reqparse, abort, Api, Resource
 
@@ -11,6 +14,7 @@ from data import db_session  # db engine
 from data.nutrition_programs import NutritionProgram  # orm NutritionProgram class
 from data.products import Product  # orm Product class
 from data.recipes import Recipe  # orm Recipe class
+from data.images import Picture
 
 # arg parser for adding new recipes
 recipe_post_parser = reqparse.RequestParser()
@@ -34,11 +38,9 @@ n_program_post_parser.add_argument('meals_data_json', required=True)
 n_program_post_parser.add_argument('type', required=True)
 n_program_post_parser.add_argument('photo_address', required=False)
 
-
 # arg parser for n programs searching
 n_program_tags_search_parser = reqparse.RequestParser()
 n_program_tags_search_parser.add_argument('search_request', required=False)
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '9CB2FA9ED59693626BC2'
@@ -53,6 +55,68 @@ def verify(username, password):
     if not (username and password):
         return False
     return USER_DATA[username] == password
+
+
+class ImageResource(Resource):
+    """
+    Resource class for Images sent from main service
+    """
+
+    @staticmethod
+    def abort_if_not_found(call_id):
+        """
+        aborts 404 error if it can't fond recipe with given id
+        same as in RecipeResource class
+        :param recipe_id:
+        """
+        session = db_session.create_session()
+        image = session.query(Picture).filter(Picture.call_id == call_id).first()
+        if not image:
+            abort(404, message=f"Image {call_id} not found")
+
+    def get(self, call_id):
+        """
+        sends image of recipe with id given as param
+        :param call_id:
+        """
+        self.abort_if_not_found(call_id)
+        session = db_session.create_session()
+        image = session.query(Picture).filter(Picture.call_id == call_id).first()
+        return send_file(image.photo_address, mimetype='image/jpeg')
+
+    @staticmethod
+    def post():
+        """
+        adds new image
+        """
+        print('post')
+        json_data = request.get_json()  # Get the POSTed json
+        dict_data = json.loads(json_data)  # Convert json to dictionary
+
+        img = dict_data["img"]  # Take out base64# str
+        img = base64.b64decode(img)  # Convert image data converted to base64 to original binary data# bytes
+        img = BytesIO(img)  # _io.Converted to be handled by BytesIO pillow
+        img = Image.open(img)
+
+        img.save(f'static/img/{dict_data["file_name"]}')  # saving file in static/img folder
+
+        # adding record to database
+        db_sess = db_session.create_session()
+        # if there are a image with the name like that
+        if db_sess.query(Picture).filter(Picture.call_id == dict_data['call_id']).first():
+            print(f'this recipe already exists({dict_data["call_id"]})')
+            abort(500, message=f'this recipe already exists({dict_data["call_id"]})')
+
+        else:
+            # creating Image class object
+            image = Picture(call_id=dict_data['call_id'],
+                            photo_address=dict_data['file_name'])
+
+            db_sess.add(image)
+            db_sess.commit()
+            db_sess.commit()
+
+        return jsonify({'success': 'OK'})
 
 
 class RecipeResource(Resource):
@@ -156,7 +220,8 @@ class RecipeListResource(Resource):
                        time=args['time'],
                        types=args['types'],
                        bonded_ingredients=args['bonded_ingredients'],
-                       photo_address=args['photo_address'])
+                       photo_address=args['photo_address'],
+                       creator_id=args['creator_id'])
 
         return jsonify({'success': 'OK'})
 
@@ -258,8 +323,6 @@ class ProductsBondedListResource(Resource):
         recipe = session.query(Recipe).get(recipe_id)
 
         return jsonify({'products': get_products_bonded_with_recipe(recipe)})
-
-
 
 
 class NutritionProgramResource(Resource):
@@ -388,12 +451,6 @@ class SearchableNutritionProgramListResource(Resource):
         return jsonify({'nutrition_programs': [item.to_dict() for item in n_programs]})
 
 
-
-
-
-
-
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -444,7 +501,8 @@ def create_tags_for_line(line):
     return line.lower() + ';' + ';'.join(line.split()).lower() + tags.lower()
 
 
-def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions, time, types, photo_address=''):
+def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions, time, types, creator_id,
+                   photo_address=''):
     """adds new recipe to the db
     needs recipe name, ingredients in format: 'ingr1;ingr2;ingr3'
     tags are being created using create_tags_for_line(name)
@@ -466,7 +524,8 @@ def add_new_recipe(name, ingredients, bonded_ingredients, how_to_cook, portions,
                         portions=portions,
                         time=time,
                         types=types,
-                        bonded_ingredients=bonded_ingredients)
+                        bonded_ingredients=bonded_ingredients,
+                        creator_id=creator_id)
 
         db_sess.add(recipe)
         db_sess.commit()
@@ -611,7 +670,8 @@ def nutrition_program_tags_search(search_input):
     for word in search_input.split():  # each word is an separated key
         db_sess = db_session.create_session()
         # searches for recipes where tags contain word
-        search_query = db_sess.query(NutritionProgram).filter(NutritionProgram.tags.like('%' + word.lower() + '%')).all()
+        search_query = db_sess.query(NutritionProgram).filter(
+            NutritionProgram.tags.like('%' + word.lower() + '%')).all()
         print(search_query)
 
         for found_n_program in search_query:  # found recipes for word
@@ -639,6 +699,9 @@ def main():
     api.add_resource(NutritionProgramListResource, '/nutrition_programs')
     api.add_resource(SearchableNutritionProgramListResource, '/nutrition_programs/search')
     api.add_resource(NutritionProgramImageResource, '/nutrition_programs/photo/<int:nutrition_program_id>')
+
+    # api.add_resource(ImageResource, '/images')
+    api.add_resource(ImageResource, '/images/<int:call_id>')
 
     app.run()
 
