@@ -16,14 +16,15 @@ class Recipe(SqlAlchemyBase, SerializerMixin):
     how_to_cook = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     tags = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     photo_address = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='static/img/file_error.jpg')
-    link_to_photo_api = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='https://recipes-db-api.herokuapp.com/api/recipes/photo/error')
+    link_to_photo_api = sqlalchemy.Column(sqlalchemy.String, nullable=True,
+                                          default='https://recipes-db-api.herokuapp.com/api/recipes/photo/error')
     portions = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     time = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     types = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     bonded_ingredients = sqlalchemy.Column(sqlalchemy.JSON, nullable=False)
+    creator_id = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     # some additional fields, currently not used
     date_time_added = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
-    creator_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     some_additional_info = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def set_photo_address(self, address=''):
