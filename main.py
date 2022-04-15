@@ -192,7 +192,13 @@ class RecipeImageResource(Resource):
         self.abort_if_not_found(recipe_id)
         session = db_session.create_session()
         recipe = session.query(Recipe).get(recipe_id)
-        return send_file(recipe.photo_address, mimetype='image/jpeg')
+
+        if recipe.photo_address[:8] == 'call_id:':
+            session = db_session.create_session()
+            image = session.query(Picture).filter(Picture.call_id == int(recipe.photo_address.split(":")[1])).first()
+            return send_file(image.photo_address, mimetype='image/jpeg')
+        else:
+            return send_file(recipe.photo_address, mimetype='image/jpeg')
 
 
 class RecipeListResource(Resource):

@@ -64,7 +64,7 @@ img_str = img_base64.decode('utf-8')  # str
 
 files = {
     "file_name": "color_3.jpg",
-    "call_id": '2',
+    "call_id": '12345',
     "img": img_str
 }
 
