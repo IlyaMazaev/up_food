@@ -26,6 +26,7 @@ recipe_post_parser.add_argument('time', required=True)
 recipe_post_parser.add_argument('types', required=True)
 recipe_post_parser.add_argument('bonded_ingredients', required=True)
 recipe_post_parser.add_argument('photo_address', required=False)
+recipe_post_parser.add_argument('creator_id', required=True)
 
 # arg parser for recipe searching
 recipe_tags_search_parser = reqparse.RequestParser()
