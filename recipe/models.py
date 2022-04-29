@@ -1,6 +1,13 @@
+import base64
+from io import BytesIO
+
 from PIL import Image
 from django.contrib.auth.models import User
 from django.db import models
+from requests.auth import HTTPBasicAuth
+from transliterate import translit
+
+basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
 
 # Create your models here.
@@ -54,12 +61,32 @@ class Reply(models.Model):
 
 
 class RecipeModel(models.Model):
-    name = models.CharField(default='Name', max_length=70)
+    name = models.CharField(default='Название', max_length=70)
     ingredients = models.CharField(max_length=400)
     how_to_cook = models.CharField(max_length=400)
     types = models.CharField(blank=True, max_length=200)
-    photo_address = models.CharField(blank=True, max_length=500, null=True)
+    photo = models.ImageField(blank=True, upload_to='files/media', max_length=500, null=True)
+    photo_address = models.CharField(max_length=200, blank=True)
     user = models.OneToOneField(Profile, on_delete=models.SET_NULL, null=True)
     bonded_ingredients = models.JSONField(blank=True, null=True)
     portions = models.IntegerField(default=1)
     time = models.CharField(max_length=20, default='1 час')
+    call_id = models.CharField(max_length=70)
+    creator_id = models.CharField(max_length=10)
+
+    def save(self, *args, **kwargs):
+        global file
+        super().save(*args, **kwargs)
+        call = translit(self.name, language_code='ru', reversed=True)
+        img = Image.open(self.photo.path)
+        buffered = BytesIO()
+        img.save(buffered, format="JPEG")
+        img_byte = buffered.getvalue()  # bytes
+        img_base64 = base64.b64encode(img_byte)  # Base64-encoded bytes * not str
+        img_str = img_base64.decode('utf-8')  # str
+        files = {
+            "file_name": self.photo_address + '.jpg',
+            "call_id": self.photo_address,
+            "img": img_str
+        }
+        return files

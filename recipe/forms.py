@@ -77,11 +77,15 @@ class AddNewRecipe(forms.ModelForm):
                                             'Пример: Грудка курина 300 гр; Картофель молодой 1 кг; ...')
     how_to_cook = forms.CharField(label='Инструкция по приготовлению')
     types = forms.CharField(label='Тэги', required=False)
-    photo_address = forms.ImageField(label='Изображение', required=False)
+    photo = forms.ImageField(label='Изображение', required=False)
     bonded_ingredients = forms.CharField(required=False, label='Продукты')
     portions = forms.IntegerField(label='Количество порций')
     time = forms.CharField(label='Время готовки')
+    call_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    creator_id = forms.CharField(widget=forms.HiddenInput(), required=False)
+    photo_address = forms.CharField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = RecipeModel
-        fields = ['name', 'ingredients', 'how_to_cook', 'types', 'photo_address', 'bonded_ingredients', 'portions', 'time']
+        fields = ['name', 'ingredients', 'how_to_cook', 'types', 'photo_address', 'bonded_ingredients', 'portions',
+                  'time', 'call_id', 'creator_id', 'photo']

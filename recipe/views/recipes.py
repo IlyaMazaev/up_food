@@ -1,4 +1,7 @@
-from django.core import serializers
+import json
+
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseServerError
 from django.shortcuts import render, redirect
 from requests import get, post
 from requests.auth import HTTPBasicAuth
@@ -35,15 +38,25 @@ def recipe(request):
     return render(request, 'recipes/recipe_template.html', context)
 
 
+@login_required
 def add_new_recipe(request):
     if request.method == 'POST':
-        form = AddNewRecipe(request.POST)
+        form = AddNewRecipe(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            data = RecipeSerializers(RecipeModel.objects.first())
-            RecipeModel.objects.all().delete()
-            r = post('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic, params=data.data)
-            print(r.status_code)
+            ins = form.save(commit=False)
+            call_id = '6483'
+            ins.photo_address = call_id
+            ins.creator_id = request.user.id
+            files = ins.save()
+            RecipeModel.objects.first().delete()
+            data = RecipeSerializers(ins)
+            recipe_image_post = post('https://recipes-db-api.herokuapp.com/api/images/add', auth=basic,
+                                     json=json.dumps(files))
+            recipe_post = post('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic, params=data.data)
+            if recipe_post.status_code or recipe_image_post.status_code != '200':
+                print(recipe_post.json())
+                print(recipe_image_post.json())
+                return HttpResponseServerError('<h1>Упс, что-то пошло не так.Попробуйте ещё раз</h1>')
             return redirect('/')
     else:
         form = AddNewRecipe()

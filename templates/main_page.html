@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-sm">
             {% if day_time == 'morning' %}
-                 <h1 style=text-align:center>Доброе утро!</h1>
+                <h1 style=text-align:center>Доброе утро!</h1>
             {% elif day_time == 'afternoon' %}
                 <h1 style=text-align:center>Добрый день!</h1>
             {% elif day_time == 'evening' %}
@@ -13,67 +13,72 @@
             <p class="lead"></p>
         </div>
         <form method="GET" class="navbar-form navbar-right">
-            <label for="search_box"></label><input type="text" class="form-control" placeholder="Поиск..." id="search_box" name="q">
+            <label for="search_box"></label><input type="text" class="form-control" placeholder="Поиск..."
+                                                   id="search_box" name="q">
         </form>
     </div>
 
 
-<script>
-fetch('https://recipes-db-api.herokuapp.com/api/recipes/photo/1', {method:'GET',
-headers: {'Authorization': 'Basic ' + btoa('api_user:super_secret_password')}})
-.then(response => response.json())
-.then(json => console.log(json));
-</script>
+    <script>
+        fetch('https://recipes-db-api.herokuapp.com/api/recipes/photo/1', {
+            method: 'GET',
+            headers: {'Authorization': 'Basic ' + btoa('api_user:super_secret_password')}
+        })
+            .then(response => response.json())
+            .then(json => console.log(json));
+    </script>
 
-  <div class="container">
-      <div class="row">
-      {% for recipe in recipe.recipes %}
-      {%  if forloop.counter|divisibleby:3 %}
-        <div class="container rounded bg-recipe-card mt-4 pt-1">
-                <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
-                        <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220" src={{ recipe.link_to_photo_api }}>
-                    </a>
-                </div>
-                <div class="">
-                    <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ recipe.id }}' class='text'>
-                            <h4 title class="text">
-                                {{ recipe.name }}
-                            </h4>
-                            <p></p>
-                        </a>
+    <div class="container">
+        <div class="row">
+            {% for recipe in recipe.recipes %}
+                {% if forloop.counter|divisibleby:3 %}
+                    <div class="container rounded bg-recipe-card mt-4 pt-1">
+                        <div class='recipe_image_card'>
+                            <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
+                                <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220"
+                                     src=https://recipes-db-api.herokuapp.com/api/images/{{ recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.link_to_photo_api }}';">
+                            </a>
+                        </div>
+                        <div class="">
+                            <div class='recipe_information_name'>
+                                <a href='/recipe/?q={{ recipe.id }}' class='text'>
+                                    <h4 title class="text">
+                                        {{ recipe.name }}
+                                    </h4>
+                                    <p></p>
+                                </a>
+                            </div>
+                            <div class='recipe_information'></div>
+                        </div>
                     </div>
-                    <div class='recipe_information'></div>
-                </div>
-            </div>
-      </div>
-      {% if not forloop.last %}
-      <div class="row">
-      {% endif %}
-      {% else %}
-        <div class="container rounded bg-recipe-card mt-4 pt-1">
-                <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
-                        <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220" src={{ recipe.link_to_photo_api }}>
-                    </a>
-                </div>
-                <div class="">
-                    <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ recipe.id }}' class='text'>
-                            <h4 title class="text">
-                                {{ recipe.name }}
-                            </h4>
-                            <p></p>
-                        </a>
                     </div>
-                    <div class='recipe_information'></div>
-                </div>
+                    {% if not forloop.last %}
+                        <div class="row">
+                    {% endif %}
+                {% else %}
+                    <div class="container rounded bg-recipe-card mt-4 pt-1">
+                        <div class='recipe_image_card'>
+                            <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
+                                <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220"
+                                     src=https://recipes-db-api.herokuapp.com/api/images/{{ recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.link_to_photo_api }}';">
+                            </a>
+                        </div>
+                        <div class="">
+                            <div class='recipe_information_name'>
+                                <a href='/recipe/?q={{ recipe.id }}' class='text'>
+                                    <h4 title class="text">
+                                        {{ recipe.name }}
+                                    </h4>
+                                    <p></p>
+                                </a>
+                            </div>
+                            <div class='recipe_information'></div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
             </div>
-      {% endif %}
-      {% endfor %}
-      </div>
-</div>
+    </div>
 {% endblock %}
 
 
