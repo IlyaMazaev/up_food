@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'recipe',
     'crispy_forms',
     'mathfilters',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

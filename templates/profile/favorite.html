@@ -8,13 +8,13 @@
       {%  if forloop.counter|divisibleby:3 %}
         <div class="container rounded bg-recipe-card mt-4 pt-1">
                 <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.recipe.id }}'>
+                    <a class='recipe_image_link' href='/recipe?q={{ recipe.recipe.id }}'>
                         <img alt="Name" class='image' style="border-radius: 5%" width="330" height="220" src={{ recipe.recipe.link_to_photo_api }}>
                     </a>
                 </div>
                 <div class="">
                     <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ recipe.recipe.id }}' class='text'>
+                        <a href='/recipe?q={{ recipe.recipe.id }}' class='text'>
                             <h4 title class="text">
                                 {{ recipe.recipe.name }}
                             </h4>
@@ -31,13 +31,13 @@
       {% else %}
         <div class="container rounded bg-recipe-card mt-4 pt-1">
                 <div class='recipe_image_card'>
-                    <a class='recipe_image_link' href='/recipe/?q={{ recipe.recipe.id }}'>
+                    <a class='recipe_image_link' href='/recipe?q={{ recipe.recipe.id }}'>
                         <img alt="Name" class='image' style="border-radius: 5%" width="330" height="220" src={{ recipe.recipe.link_to_photo_api }}>
                     </a>
                 </div>
                 <div class="">
                     <div class='recipe_information_name'>
-                        <a href='/recipe/?q={{ recipe.recipe.id }}' class='text'>
+                        <a href='/recipe?q={{ recipe.recipe.id }}' class='text'>
                             <h4 title class="text">
                                 {{ recipe.recipe.name }}
                             </h4>

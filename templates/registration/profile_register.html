@@ -5,9 +5,9 @@
     <div class="row">
         <div class="col-sm">
             <dev class="card">
-                <h3 class="card-header">Создание профиля</h3>
+                <h3 class="card-header">Создание рецепты</h3>
                 <div class="card-body">
-                    <h5>Пожалуйста, настройте свой профиль</h5>
+                    <h5>Пожалуста заполните ваш рецепт</h5>
                     <form method="POST">
                         {% csrf_token %}
                         {{ form|crispy }}
