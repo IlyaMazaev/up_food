@@ -9,6 +9,7 @@ from requests.auth import HTTPBasicAuth
 from recipe.forms import AddNewRecipe
 from recipe.models import Profile, Comments, RecipeModel
 from recipe.serializers import RecipeSerializers
+from random import randint
 
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
@@ -44,7 +45,9 @@ def add_new_recipe(request):
         form = AddNewRecipe(request.POST, request.FILES)
         if form.is_valid():
             ins = form.save(commit=False)
-            call_id = '6483'
+            call_id = str(randint(30, 5000))
+            while get('https://recipes-db-api.herokuapp.com/api/images/' + call_id).status_code != '404':
+                call_id = str(randint(30, 5000))
             ins.photo_address = call_id
             ins.creator_id = request.user.id
             files = ins.save()

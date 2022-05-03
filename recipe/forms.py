@@ -78,7 +78,7 @@ class AddNewRecipe(forms.ModelForm):
     how_to_cook = forms.CharField(label='Инструкция по приготовлению')
     types = forms.CharField(label='Тэги', required=False)
     photo = forms.ImageField(label='Изображение', required=False)
-    bonded_ingredients = forms.CharField(required=False, label='Продукты')
+    bonded_ingredients = forms.CharField(widget=forms.HiddenInput(), required=False, label='Продукты')
     portions = forms.IntegerField(label='Количество порций')
     time = forms.CharField(label='Время готовки')
     call_id = forms.CharField(widget=forms.HiddenInput(), required=False)
