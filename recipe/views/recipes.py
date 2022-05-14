@@ -45,9 +45,9 @@ def add_new_recipe(request):
         form = AddNewRecipe(request.POST, request.FILES)
         if form.is_valid():
             ins = form.save(commit=False)
-            call_id = str(randint(30, 5000))
+            call_id = '8000' + str(randint(30, 5000))
             while get('https://recipes-db-api.herokuapp.com/api/images/' + call_id).status_code != '404':
-                call_id = str(randint(30, 5000))
+                call_id = '8000' + str(randint(30, 5000))
             ins.photo_address = call_id
             ins.creator_id = request.user.id
             files = ins.save()

@@ -1,11 +1,7 @@
-import base64
-from io import BytesIO
-
 from PIL import Image
 from django.contrib.auth.models import User
 from django.db import models
 from requests.auth import HTTPBasicAuth
-from transliterate import translit
 
 basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
@@ -73,20 +69,3 @@ class RecipeModel(models.Model):
     time = models.CharField(max_length=20, default='1 час')
     call_id = models.CharField(max_length=70)
     creator_id = models.CharField(max_length=10)
-
-    def save(self, *args, **kwargs):
-        global file
-        super().save(*args, **kwargs)
-        call = translit(self.name, language_code='ru', reversed=True)
-        img = Image.open(self.photo.path)
-        buffered = BytesIO()
-        img.save(buffered, format="JPEG")
-        img_byte = buffered.getvalue()  # bytes
-        img_base64 = base64.b64encode(img_byte)  # Base64-encoded bytes * not str
-        img_str = img_base64.decode('utf-8')  # str
-        files = {
-            "file_name": self.photo_address + '.jpg',
-            "call_id": self.photo_address,
-            "img": img_str
-        }
-        return files

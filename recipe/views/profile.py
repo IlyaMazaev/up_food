@@ -1,9 +1,15 @@
+import json
+
 from django.contrib import messages
+from django.http import HttpResponseServerError
 from django.shortcuts import render, redirect
-from requests import get
+from requests import get, post
+from requests.auth import HTTPBasicAuth
 
 from recipe.forms import UserUpdateForm, ProfileUpdateForm
 from recipe.models import Profile, Comments
+
+basic = HTTPBasicAuth('api_user', 'super_secret_password')
 
 
 def profile(request):
@@ -12,7 +18,17 @@ def profile(request):
         p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
-            p_form.save()
+            image_form = p_form.save(commit=False)
+            image_date = {
+                'img': image_form.image,
+                'call_id': str('9000') + str(request.user.id)
+            }
+            recipe_image_post = post('https://recipes-db-api.herokuapp.com/api/images/add', auth=basic,
+                                     json=json.dumps(image_date))
+            if recipe_image_post.status_code != '200':
+                print(recipe_image_post.json())
+                return HttpResponseServerError('<h1>Упс, что-то пошло не так.Попробуйте ещё раз</h1>')
+            image_form.save()
             username = u_form.cleaned_data.get('username')
             messages.success(request, f'Изменения профиля сохранены для {username}')
             return redirect('/accounts/profile/')
