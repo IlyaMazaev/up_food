@@ -3,4 +3,4 @@ from .main_view import *
 from .order import *
 from .profile import *
 from .recipes import *
-from robot import *
+from .robot import *
