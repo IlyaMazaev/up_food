@@ -23,7 +23,7 @@ def profile(request):
                 'img': image_form.image,
                 'call_id': str('9000') + str(request.user.id)
             }
-            recipe_image_post = post('https://recipes-db-api.herokuapp.com/api/images/add', auth=basic,
+            recipe_image_post = post('https://takecook-api.herokuapp.com/api/images/add', auth=basic,
                                      json=json.dumps(image_date))
             if recipe_image_post.status_code != '200':
                 print(recipe_image_post.json())
@@ -80,7 +80,7 @@ def favorite(request):
     for i in allfav:
         if len(i) >= 1:
             params_search = i.strip(';')
-            rec.append(get('https://recipes-db-api.herokuapp.com/api/recipes/' + params_search, auth=basic).json())
+            rec.append(get('https://takecook-api.herokuapp.com/api/recipes/' + params_search, auth=basic).json())
     context = dict(
         fav=rec
     )

@@ -18,7 +18,7 @@ def recipe(request):
     q = ''
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
-    rec = get('https://recipes-db-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
+    rec = get('https://takecook-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
     logged = request.user.is_authenticated
     dis_button_fav = False
     if logged:
@@ -46,16 +46,16 @@ def add_new_recipe(request):
         if form.is_valid():
             ins = form.save(commit=False)
             call_id = '8000' + str(randint(30, 5000))
-            while get('https://recipes-db-api.herokuapp.com/api/images/' + call_id).status_code != '404':
+            while get('https://takecook-api.herokuapp.com/api/images/' + call_id).status_code != '404':
                 call_id = '8000' + str(randint(30, 5000))
             ins.photo_address = call_id
             ins.creator_id = request.user.id
             files = ins.save()
             RecipeModel.objects.first().delete()
             data = RecipeSerializers(ins)
-            recipe_image_post = post('https://recipes-db-api.herokuapp.com/api/images/add', auth=basic,
+            recipe_image_post = post('https://takecook-api.herokuapp.com/api/images/add', auth=basic,
                                      json=json.dumps(files))
-            recipe_post = post('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic, params=data.data)
+            recipe_post = post('https://takecook-api.herokuapp.com/api/recipes', auth=basic, params=data.data)
             if recipe_post.status_code or recipe_image_post.status_code != '200':
                 print(recipe_post.json())
                 print(recipe_image_post.json())

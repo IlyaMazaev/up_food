@@ -11,8 +11,8 @@ basic = HTTPBasicAuth('api_user', 'super_secret_password')
 def order(request):
     if 'q' in request.GET and request.GET['q']:
         q = request.GET['q']
-    rec = get('https://recipes-db-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
-    products_dict = get('https://recipes-db-api.herokuapp.com/api/products/for_recipe/' + q,
+    rec = get('https://takecook-api.herokuapp.com/api/recipes/' + q, auth=basic).json()
+    products_dict = get('https://takecook-api.herokuapp.com/api/products/for_recipe/' + q,
                         auth=basic).json()
     products_list = list(products_dict.get('products').values())
     ingredients_list = list(products_dict.get('products').keys())

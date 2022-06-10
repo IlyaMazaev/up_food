@@ -22,9 +22,9 @@ def main_page(request):
         q = request.GET['q']
     if q != '':
         params_search = {'search_request': q}
-        rec = get('https://recipes-db-api.herokuapp.com/api/recipes/search', auth=basic, params=params_search).json()
+        rec = get('https://takecook-api.herokuapp.com/api/recipes/search', auth=basic, params=params_search).json()
     else:
-        rec = get('https://recipes-db-api.herokuapp.com/api/recipes', auth=basic).json()
+        rec = get('https://takecook-api.herokuapp.com/api/recipes', auth=basic).json()
     context = dict(
         recipe=rec,
         q=q,

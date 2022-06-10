@@ -20,7 +20,7 @@
 
 
     <script>
-        fetch('https://recipes-db-api.herokuapp.com/api/recipes/photo/1', {
+        fetch('https://takecook-api.herokuapp.com/api/recipes/photo/1', {
             method: 'GET',
             headers: {'Authorization': 'Basic ' + btoa('api_user:super_secret_password')}
         })
@@ -36,7 +36,7 @@
                         <div class='recipe_image_card'>
                             <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
                                 <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220"
-                                     src=https://recipes-db-api.herokuapp.com/api/images/{{ recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.link_to_photo_api }}';">
+                                     src=https://takecook-api.herokuapp.com/api/images/{{ recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.link_to_photo_api }}';">
                             </a>
                         </div>
                         <div class="">
@@ -60,7 +60,7 @@
                         <div class='recipe_image_card'>
                             <a class='recipe_image_link' href='/recipe/?q={{ recipe.id }}'>
                                 <img alt="Name" style="border-radius: 5%" class='image' width="330" height="220"
-                                     src=https://recipes-db-api.herokuapp.com/api/images/{{ recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.link_to_photo_api }}';">
+                                     src=https://takecook-api.herokuapp.com/api/images/{{ recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.link_to_photo_api }}';">
                             </a>
                         </div>
                         <div class="">
