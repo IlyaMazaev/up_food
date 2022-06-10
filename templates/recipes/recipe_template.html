@@ -5,7 +5,7 @@
         <div class="main_class">
             <div class="title_body">
                 <div class="image_class">
-                    <img class="main_image" src=https://takecook-api.herokuapp.com/api/images/{{ recipe.recipe.photo_address }} onerror="this.onerror=null;this.src='{{ recipe.recipe.link_to_photo_api }}';">
+                    <img class="main_image" src={{ recipe.recipe.link_to_photo_api }}>
                 </div>
                 <div class="main_title_class">
                     <span itemprop="name">
