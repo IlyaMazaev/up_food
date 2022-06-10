@@ -20,7 +20,7 @@ class Profile(models.Model):
     cart = models.CharField(max_length=1000, blank=True)
     gender = models.CharField(max_length=4, choices=GENDER_CHOICES, default='NS')
     birth_date = models.DateField(default='1990-01-01')
-    verified = models.BooleanField(default=False)
+    # verified = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.user.username} Profile'
